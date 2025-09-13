@@ -1,7 +1,13 @@
+import Layout from './components/Layout/Layout';
+import AttendanceDashboard from './pages/AttendanceDashboard/AttendanceDashboard';
+import './styles/globals.css';
 
-export default function App() {
+function App() {
   return (
-    <div>App Component</div>
+    <Layout>
+      <AttendanceDashboard />
+    </Layout>
   );
 }
 
+export default App;
