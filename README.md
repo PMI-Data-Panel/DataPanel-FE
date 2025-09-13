@@ -1,18 +1,18 @@
 # DataPanel-FE
-프리캡스톤 데이터패널 FE 입니다.
+기업연계 SW캡스톤디자인 데이터패널 FE 입니다.  
 
-커밋 및 브랜치, 이슈 규칙 (Commit, Branch, and Issue Convention)
-✉️ 커밋 태그 설명
-태그 이름	설명
-[chore]	코드 수정, 내부 파일 수정
-[feat]	새로운 기능 구현
-[add]	FEAT 이외의 부수적인 코드 추가, 라이브러리 추가, 새로운 파일 생성
-[fix]	버그, 오류 해결
-[del]	쓸모 없는 코드 삭제
-[docs]	README나 WIKI 등의 문서 개정
-[move]	프로젝트 내 파일이나 코드의 이동
-[rename]	파일 이름 변경이 있을 때 사용
-[refactor]	전면 수정이 있을 때 사용
+커밋 및 브랜치, 이슈 규칙 (Commit, Branch, and Issue Convention)  
+✉️ 커밋 태그 설명  
+태그 이름	설명  
+[chore]	코드 수정, 내부 파일 수정  
+[feat]	새로운 기능 구현  
+[add]	FEAT 이외의 부수적인 코드 추가, 라이브러리 추가, 새로운 파일 생성  
+[fix]	버그, 오류 해결  
+[del]	쓸모 없는 코드 삭제  
+[docs]	README나 WIKI 등의 문서 개정  
+[move]	프로젝트 내 파일이나 코드의 이동  
+[rename]	파일 이름 변경이 있을 때 사용  
+[refactor]	전면 수정이 있을 때 사용  
 
 📌 커밋 규칙
 커밋 형식
