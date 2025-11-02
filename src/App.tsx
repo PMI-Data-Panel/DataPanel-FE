@@ -1,33 +1,40 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // import 컴포넌트
-import LoginPage from './pages/LoginPage/LoginPage';
-import AttendanceDashboard from './pages/AttendanceDashboard/AttendanceDashboard';
-import Layout from './components/Layout/Layout';
+import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import HomeLayout from "./layouts/HomeLayout";
+import HomePage from "./pages/HomePage";
+import SearchPage from "./pages/SearchPage";
 
-// import 스타일
-import './styles/globals.css';
+// 라우팅
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomeLayout />,
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/search",
+        element: <SearchPage />,
+      },
+    ],
+  },
+]);
 
 function App() {
   return (
-    <Router>
-      <Routes>
-
-        { /* 로그인 페이지 */}
-        <Route path="/" element={<LoginPage />} />
-
-        { /* 대시보드 페이지 */ }
-        <Route
-          path="/dashboard"
-          element={
-            <Layout>
-              <AttendanceDashboard />
-            </Layout>
-          }
-        />
-
-      </Routes>
-    </Router>
+    <>
+      <RouterProvider router={router} />
+    </>
   );
 }
 
