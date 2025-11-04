@@ -20,6 +20,7 @@ const SearchForm = ({
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       handleSubmit(e as any);
     }
   };

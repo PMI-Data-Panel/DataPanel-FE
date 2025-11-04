@@ -30,7 +30,7 @@ const RespondentCard = ({ response, index, onClick }: RespondentCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer group"
+      className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer group h-full"
     >
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
@@ -105,9 +105,9 @@ const InfoRow = ({
 }) => (
   <div className="flex items-start gap-2">
     <div className="text-gray-400 mt-0.5">{icon}</div>
-    <div className="flex-1">
+    <div className="flex-1 min-w-0">
       <p className="text-xs text-gray-500">{label}</p>
-      <p className="text-sm font-medium text-gray-800 truncate">
+      <p className="text-sm font-medium text-gray-800 break-words">
         {value || "정보 없음"}
       </p>
     </div>

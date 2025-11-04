@@ -3,12 +3,12 @@ import Navbar from "../pages/Navbar";
 
 const HomeLayout = () => {
   return (
-    <div className="h-dvh flex flex-col ">
+    <div className="h-dvh flex flex-col">
       <Navbar />
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-auto">
+        {" "}
         <Outlet />
       </main>
-
       <footer></footer>
     </div>
   );

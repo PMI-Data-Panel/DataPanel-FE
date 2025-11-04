@@ -1,13 +1,12 @@
 import { useState } from "react";
 import Button from "../components/common/Button";
 import LandingText from "../components/common/LandingText";
-
-import SearchResults from "../components/search/SearchResults";
 import SearchForm from "../components/search/SearchForm";
+import SearchResults from "../components/search/SearchResults";
 import {
+  mockSurveyData,
   filterResponses,
   getSingleAnswer,
-  mockSurveyData,
 } from "../utils/mockDataUtils";
 
 type ResponseSource = {
@@ -119,7 +118,7 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="flex flex-col p-10 mt-10 gap-10">
+    <div className="flex flex-col p-10 mt-10 gap-10 pb-20">
       {/* 헤더 텍스트 */}
       <LandingText
         titleText1="실제 사람들에게서"
@@ -128,7 +127,6 @@ const SearchPage = () => {
         subText1="포괄적인 소비자 데이터와 행동 인사이트를 활용하여"
         subText2="비즈니스 의사결정에 확신을 더하세요."
       />
-
       {/* 검색 폼 */}
       <SearchForm
         searchQuery={searchQuery}
@@ -136,7 +134,6 @@ const SearchPage = () => {
         onSearch={handleSearch}
         isSearching={isSearching}
       />
-
       {/* 예시 검색어 */}
       {!hasSearched && (
         <div className="flex flex-col justify-center items-center text-sm text-gray-600 mt-4 gap-2">
@@ -163,14 +160,15 @@ const SearchPage = () => {
           </div>
         </div>
       )}
-
       {/* 검색 결과 */}
-      {hasSearched && (
-        <SearchResults
-          results={searchResults}
-          isSearching={isSearching}
-          searchQuery={searchQuery}
-        />
+      {hasSearched && searchQuery && (
+        <>
+          <SearchResults
+            results={searchResults}
+            isSearching={isSearching}
+            searchQuery={searchQuery}
+          />
+        </>
       )}
     </div>
   );
