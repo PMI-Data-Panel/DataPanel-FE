@@ -6,7 +6,12 @@ import NotFoundPage from "./pages/NotFoundPage";
 import HomeLayout from "./layouts/HomeLayout";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
+import { SearchProvider } from "./provider/SearchProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import SearchResults from "./pages/SearchResults";
 
+const queryClient = new QueryClient();
 // 라우팅
 const router = createBrowserRouter([
   {
@@ -26,14 +31,23 @@ const router = createBrowserRouter([
         path: "/search",
         element: <SearchPage />,
       },
+      {
+        path: "/search/status/:task_id",
+        element: <SearchResults />,
+      },
     ],
   },
 ]);
 
 function App() {
   return (
-    <div className="w-full h-full">
-      <RouterProvider router={router} />
+    <div className="w-full min-h-screen">
+      <QueryClientProvider client={queryClient}>
+        <SearchProvider>
+          <RouterProvider router={router} />
+        </SearchProvider>
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={true} />}
+      </QueryClientProvider>
     </div>
   );
 }

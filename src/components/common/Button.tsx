@@ -37,7 +37,7 @@ const Button = ({
         ${sizeStyles[size]}
         
         border-none
-        rounded-3xl 
+        rounded-xl 
         font-medium 
         ${variantStyles[variant]}
         

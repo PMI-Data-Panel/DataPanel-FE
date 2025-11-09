@@ -5,7 +5,34 @@
   scrollbar-width: none;
 }
 
-  /* Chrome, Safari, Edge용 스크롤바 숨기기 */
+/* Chrome, Safari, Edge용 스크롤바 숨기기 */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* LoadingStatusPage에서 사용하는 물결 애니메이션 */
+@keyframes wave {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+}
+
+.animate-wave-1 {
+  animation: wave 1.4s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-wave-2 {
+  animation: wave 1.4s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.animate-wave-3 {
+  animation: wave 1.4s ease-in-out infinite;
+  animation-delay: 0.4s;
 }

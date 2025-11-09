@@ -34,7 +34,7 @@ const SearchForm = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="미혼이고 전문직인 응답자"
+          placeholder="서울에 거주하는 30대 남성 직장인"
           disabled={isSearching}
         />
         <button

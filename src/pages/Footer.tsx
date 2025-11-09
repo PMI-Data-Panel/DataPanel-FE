@@ -1,9 +1,9 @@
 const Footer = () => {
   return (
     <>
-      <footer className=" bg-gray-900 text-white scroll-py-80 py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-8">
+      <footer className=" bg-gray-900 text-white scroll-py-80">
+        <div className="mx-auto px-10">
+          <div className="grid grid-cols-3 gap-10 py-5">
             <div>
               <h3 className="font-bold mb-4">Sniffle</h3>
               <p className="text-sm text-gray-400">
@@ -20,6 +20,7 @@ const Footer = () => {
                 <li>Fast API</li>
               </ul>
             </div>
+
             <div>
               <h4 className="font-bold mb-4">FE</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -28,7 +29,8 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
+
+          <div className="border-t border-gray-800 text-center text-sm text-gray-400 py-3">
             © 2025 Sniffle, All rights reserved.
           </div>
         </div>
