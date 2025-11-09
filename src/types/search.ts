@@ -1,72 +1,43 @@
-export type QuestionType = "SINGLE" | "MULTI";
+export interface RequestSearchDto {
+  query: string;
+  index_name?: string;
+  size?: number;
+}
 
-export type QAPAIRS = {
-  q_code: string;
-  q_text: string;
-  q_type: QuestionType;
-  answer_text: string | number;
-  embedding_text: string;
-};
+export interface ResponseSearchDto {
+  message: string;
+  task_id: string;
+  status_url: string;
+}
 
-export type SearchResponseDto = {
-  took: number;
-  timed_out: boolean;
-  _shards: {
-    total: number;
-    successful: number;
-    skipped: number;
-    failed: number;
-  };
-  hits: {
-    total: HITS_TOTAL;
+export interface ResponseSearchPullingDto {
+  state: string; // 작업 상태 (SUCCESS, FAILURE)
+  message: string;
+  ready: boolean;
+  result: {
+    query: string;
+    total_hits: number;
     max_score: number;
-    hits: HITS[];
+    results: ResultsDto[];
+    took_ms: number;
+    query_analysis: {
+      keywords: string[];
+      filters_applied: boolean;
+    };
   };
-};
+}
 
-// SearchPage에서 reesponses 상태 타입
-export type ResponseDto = {
+interface ResultsDto {
   user_id: string;
-  timestamp: string;
-  qa_pairs: QAPAIRS[];
-};
-
-export type HITS = {
-  _index: string;
-  _id: string;
-  _score: number;
-  _source: ResponseDto;
-  inner_hits: {
-    [key: string]: HIT_QUERY;
+  score: number;
+  demographic_info: {
+    age_group: string;
+    occupation: string;
   };
-};
+  qa_pairs: QA_Pairs[];
+}
 
-/* type INNER_HITS = {
-  hit_query: HIT_QUERY[];
-}; */
-
-// 동적 키를 가짐 (ex. hit_전문직, hit_미혼)
-type HIT_QUERY = {
-  hits: {
-    total: HITS_TOTAL;
-    max_score: number;
-    hits: HIT_QUERY_HITS[];
-  };
-};
-
-type HITS_TOTAL = {
-  value: number;
-  relation: string;
-};
-
-type HIT_QUERY_HITS = {
-  _index: string;
-  //survey_response_id: string;
-  _id: string;
-  _nested: {
-    field: string;
-    offset: number;
-  };
-  _score: number;
-  _source: QAPAIRS;
-};
+interface QA_Pairs {
+  question: string;
+  answer: string;
+}

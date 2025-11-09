@@ -4,14 +4,12 @@ import Team from "../components/HomePage/Team";
 
 const HomePage = () => {
   return (
-    <div className="h-full overflow-y-auto scrollbar-hide bg-white">
+    <div className="w-full h-full overflow-y-auto scrollbar-hide bg-white">
       <LandingPage />
 
       <AboutSniffle />
 
       <Team />
-
-      {/* Footer */}
     </div>
   );
 };

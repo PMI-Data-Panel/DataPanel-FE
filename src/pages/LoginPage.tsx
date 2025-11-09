@@ -39,7 +39,7 @@ const LoginPage2 = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-full">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white rounded-xl shadow-2xl p-10 w-full max-w-md animate-[fadeInUp_0.5s_ease-out]">
         <div className="text-center mb-8">
           <h1 className="text-[#333] text-3xl mb-2 font-semibold">

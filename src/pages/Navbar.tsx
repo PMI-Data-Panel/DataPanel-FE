@@ -6,7 +6,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-between items-center px-8 py-4 bg-black text-white">
+    <div className="flex justify-between items-center px-6 py-2.5 bg-black text-white">
       <strong className="cursor-pointer" onClick={() => navigate("/")}>
         <PawPrint size={24} />
       </strong>
