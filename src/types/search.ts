@@ -31,8 +31,14 @@ interface ResultsDto {
   user_id: string;
   score: number;
   demographic_info: {
-    age_group: string;
-    occupation: string;
+    panel: string | null;
+    gender: string | null;
+    birth_year: string | null;
+    age: string | null;
+    age_group: string | null;
+    region: string | null;
+    sub_region: string | null;
+    survey_datetime: string | null;
   };
   qa_pairs: QA_Pairs[];
 }

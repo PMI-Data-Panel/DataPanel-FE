@@ -22,7 +22,7 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = async (searchQuery: string) => {
-    console.log("사용자가 입력한 검색어: ", searchQuery);
+    console.log("🔴 사용자가 입력한 검색어: ", searchQuery);
     // 전에 성공했었다면 리셋
     if (isSuccess) {
       reset();
@@ -31,7 +31,9 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
-    // mutate가 성공하고, 그로 인해 task_id가 생겼다면 로딩페이지로 navigate
+    console.log("🔴 mutate가 성공해서 결과 페이지로 navigate: ", isSuccess);
+
+    // mutate가 성공하고, 그로 인해 task_id가 생겼다면 결과 페이지로 navigate
     if (isSuccess && task_id) {
       navigate(`/search/status/${task_id}`); // 백엔드 api 개발 이후, status_url로 변경 예정
     }

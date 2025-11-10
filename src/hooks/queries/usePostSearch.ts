@@ -25,11 +25,11 @@ function usePostSearch() {
 
       // 임시로 task_id를 고정값으로 설정
       setTaskId("temporary_task_id_12345");
-      console.log("검색 요청 성공, 응답 데이터: ", data);
-      console.log("임시 고정토큰 설정 완료: ", "temporary_task_id_12345");
+      console.log("🟠 검색 요청 성공, 응답 데이터: ", data);
+      console.log("🟠 임시 고정토큰 설정 완료: ", "temporary_task_id_12345");
     },
     onError: (error) => {
-      console.log("검색 요청 중 에러 발생:", error);
+      console.log("🟠 검색 요청 중 에러 발생:", error);
       setTaskId("");
     },
   });

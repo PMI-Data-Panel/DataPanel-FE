@@ -1,0 +1,73 @@
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell,
+  ResponsiveContainer,
+} from "recharts";
+import type { BarData } from "../../../types/graph";
+
+const BarChart = ({
+  chartData,
+  title,
+}: {
+  chartData: BarData[];
+  title: string;
+}) => {
+  // 툴팁
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: BarData }>;
+  }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-gray-900 text-white px-3 py-2 rounded shadow-lg text-xs">
+          <div className="font-semibold">{data.label}</div>
+          <div>비율: {data.value}%</div>
+          <div>인원: {data.count}명</div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">
+        {title}
+      </h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <RechartsBarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+          <XAxis type="number" domain={[0, 100]} />
+          <YAxis dataKey="label" type="category" width={60} />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+          />
+          <Bar dataKey="value" radius={[0, 8, 8, 0]} cursor="pointer">
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
+        </RechartsBarChart>
+      </ResponsiveContainer>
+      <div className="mt-4 text-center">
+        <span className="text-xs text-gray-500">패널 수 (%)</span>
+      </div>
+    </div>
+  );
+};
+
+export default BarChart;
