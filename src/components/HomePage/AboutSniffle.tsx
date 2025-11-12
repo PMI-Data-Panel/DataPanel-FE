@@ -3,7 +3,7 @@ import Button from "../common/Button";
 const AboutSniffle = () => {
   return (
     <>
-      <div>
+      <div id="about">
         <section className="py-4 px-4 bg-gray-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">About Sniffle</h2>
