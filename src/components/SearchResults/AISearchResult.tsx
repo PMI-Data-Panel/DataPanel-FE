@@ -56,9 +56,10 @@ const AISearchResult = ({
           </div>
         </div>
         <p className="text-gray-700 leading-relaxed">
-          '{query}' 조건으로 총{" "}
+          '{query}'라는 검색어로 총{" "}
           <span className="font-semibold">{data.result.results.length}명</span>
-          의 관련 패널을 찾았습니다. {generateSummary()}
+          의 관련 패널을 찾았습니다.
+          <br /> {generateSummary()}
         </p>
         <div className="mt-4">
           <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">

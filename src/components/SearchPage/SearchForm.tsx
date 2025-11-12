@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useEffect } from "react";
 
 interface SearchFormProps {
   searchQuery: string;
@@ -24,6 +25,11 @@ const SearchForm = ({
       handleSubmit(e as any);
     }
   };
+
+  // 이미 키워드가 있다면 (히스토리로 넘어온 경우) 검색바에 query 입력해두기
+  useEffect(() => {
+    setSearchQuery(searchQuery);
+  }, [searchQuery]);
 
   return (
     <form onSubmit={handleSubmit} className="w-2/3 mx-auto">

@@ -70,7 +70,7 @@ const SearchResults = () => {
       <Sidebar />
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-15">
         {isSuccess && data && data.state === "SUCCESS" && (
           <div className="space-y-6">
             {/* 제목 */}

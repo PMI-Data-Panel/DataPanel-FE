@@ -18,6 +18,7 @@ const Footer = () => {
                 <li>OpenSearch</li>
                 <li>Qdrant</li>
                 <li>Fast API</li>
+                <li>RRF</li>
               </ul>
             </div>
 
