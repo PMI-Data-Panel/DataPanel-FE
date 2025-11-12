@@ -1,7 +1,11 @@
+import { SidebarClose, SidebarOpen } from "lucide-react";
 import { useState } from "react";
+import { useSearch } from "../../hooks/useSearch";
+import SearchHistory from "./SearchHistory";
 
 const Sidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const { searchHistory } = useSearch();
 
   return (
     <>
@@ -20,6 +24,13 @@ const Sidebar = () => {
         }`}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {!isHovered && (
+          <SidebarOpen className="bg-gray-50 w-8 text-gray-400 mt-5 ml-3" />
+        )}
+        {isHovered && (
+          <SidebarClose className="bg-white w-8 text-gray-400 mt-5 ml-3" />
+        )}
+
         <div
           className={`grid grid-rows-2 h-full p-6 ${
             isHovered ? "opacity-100" : "opacity-0"
@@ -30,9 +41,17 @@ const Sidebar = () => {
             <h3 className="text-sm font-semibold text-gray-700 mb-3 whitespace-nowrap">
               검색 히스토리
             </h3>
-            <p className="text-sm text-gray-500 whitespace-nowrap">
-              이전 검색 히스토리가 없습니다.
-            </p>
+            {searchHistory.length === 0 ? (
+              <p className="text-sm text-gray-500 whitespace-nowrap">
+                이전 검색 히스토리가 없습니다.
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {searchHistory.map((item) => (
+                  <SearchHistory key={item.id} query={item.query} data={item} />
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* 저장된 그룹 */}

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
 const SearchPage = () => {
-  const { query, setQuery, task_id } = useSearch();
+  const { query, setQuery, task_id, addSearchHistory } = useSearch();
   const { mutate, isPending, isSuccess, reset } = usePostSearch();
   const navigate = useNavigate();
   const isInitialized = useRef(false);
@@ -19,7 +19,7 @@ const SearchPage = () => {
       isInitialized.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query]);
 
   const handleSearch = async (searchQuery: string) => {
     console.log("🔴 사용자가 입력한 검색어: ", searchQuery);
@@ -27,6 +27,10 @@ const SearchPage = () => {
     if (isSuccess) {
       reset();
     }
+
+    // 검색 내역에 추가
+    addSearchHistory(searchQuery);
+
     mutate({ query: searchQuery });
   };
 
