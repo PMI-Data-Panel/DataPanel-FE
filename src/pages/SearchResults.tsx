@@ -17,6 +17,7 @@ import {
   calculatePanelSourceData,
   checkHasNullValues,
 } from "../utils/chartDataCalculators";
+import { getAllMostFrequentValues } from "../utils/getMostFrequentValues";
 import BarChart from "../components/common/graph/BarChart";
 import NestedDonutChart from "../components/common/graph/NestedDonutChart";
 import DonutChart from "../components/common/graph/DonutChart";
@@ -34,6 +35,19 @@ const SearchResults = () => {
   const residenceData = useMemo(() => calculateResidenceData(data), [data]);
   const panelSourceData = useMemo(() => calculatePanelSourceData(data), [data]);
   const hasNullValues = useMemo(() => checkHasNullValues(data), [data]);
+
+  // 최빈값 계산
+  const mostFrequentValues = useMemo(
+    () =>
+      getAllMostFrequentValues(
+        genderData,
+        ageData,
+        regionData,
+        residenceData,
+        panelSourceData
+      ),
+    [genderData, ageData, regionData, residenceData, panelSourceData]
+  );
 
   if (isError) {
     return <NotFoundPage />;
@@ -71,7 +85,11 @@ const SearchResults = () => {
             </div>
 
             {/* AI 분석 요약 */}
-            <AISearchResult query={query} data={data} />
+            <AISearchResult
+              query={query}
+              data={data}
+              mostFrequentValues={mostFrequentValues}
+            />
 
             {/* 이 패널들 중에서 추가 검색 */}
             <AdditionalSearch
@@ -98,7 +116,7 @@ const SearchResults = () => {
 
             {/* 도넛 차트 섹션 */}
             <div className="grid grid-cols-2 gap-6 mt-6">
-              {/* 지역 분포 (이중 도넛) */}
+              {/* 지역 분포 (이중 도넛차트) */}
               {regionData.length > 0 && residenceData.length > 0 && (
                 <NestedDonutChart
                   innerData={regionData}
@@ -107,7 +125,7 @@ const SearchResults = () => {
                 />
               )}
 
-              {/* 설문지 출처 (일반 도넛) */}
+              {/* 설문지 출처 (일반 도넛차트) */}
               {panelSourceData.length > 0 && (
                 <DonutChart chartData={panelSourceData} title="설문지 출처" />
               )}
