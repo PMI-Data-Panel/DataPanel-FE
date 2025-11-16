@@ -13,7 +13,7 @@ export const calculateGenderData = (
   data.result.results.forEach((result) => {
     const gender = result.demographic_info.gender;
     if (gender === null || gender === undefined || gender === "") {
-      genderCount["모름"] = (genderCount["모름"] || 0) + 1;
+      genderCount["알 수 없음"] = (genderCount["알 수 없음"] || 0) + 1;
     } else {
       genderCount[gender] = (genderCount[gender] || 0) + 1;
     }
@@ -22,7 +22,7 @@ export const calculateGenderData = (
   const colorMap: Record<string, string> = {
     여성: "#ec4899",
     남성: "#3b82f6",
-    모름: "#9ca3af",
+    "알 수 없음": "#9ca3af",
   };
 
   return Object.entries(genderCount)
@@ -47,7 +47,7 @@ export const calculateAgeData = (
   data.result.results.forEach((result) => {
     const ageGroup = result.demographic_info.age_group;
     if (ageGroup === null || ageGroup === undefined || ageGroup === "") {
-      ageCount["모름"] = (ageCount["모름"] || 0) + 1;
+      ageCount["알 수 없음"] = (ageCount["알 수 없음"] || 0) + 1;
     } else {
       ageCount[ageGroup] = (ageCount[ageGroup] || 0) + 1;
     }
@@ -60,7 +60,7 @@ export const calculateAgeData = (
     "50대": "#ec4899",
     "50대+": "#a855f7",
     "60대 이상": "#8b5cf6",
-    "밝힘 원함": "#9ca3af",
+    "알 수 없음": "#9ca3af",
   };
 
   const ageOrder = [
@@ -70,7 +70,7 @@ export const calculateAgeData = (
     "50대",
     "50대+",
     "60대 이상",
-    "밝힘 원함",
+    "알 수 없음",
   ];
 
   return Object.entries(ageCount)
@@ -99,7 +99,7 @@ export const calculateRegionData = (
   data.result.results.forEach((result) => {
     const region = result.demographic_info.region;
     if (region === null || region === undefined || region === "") {
-      regionCount["모름"] = (regionCount["모름"] || 0) + 1;
+      regionCount["알 수 없음"] = (regionCount["알 수 없음"] || 0) + 1;
     } else {
       regionCount[region] = (regionCount[region] || 0) + 1;
     }
@@ -121,7 +121,7 @@ export const calculateRegionData = (
       label,
       count,
       value: Math.round((count / totalCount) * 100),
-      color: label === "모름" ? "#9ca3af" : colors[index % colors.length],
+      color: label === "알 수 없음" ? "#9ca3af" : colors[index % colors.length],
     }))
     .sort((a, b) => b.count - a.count);
 };
@@ -138,7 +138,7 @@ export const calculateResidenceData = (
   data.result.results.forEach((result) => {
     const subRegion = result.demographic_info.sub_region;
     if (subRegion === null || subRegion === undefined || subRegion === "") {
-      residenceCount["모름"] = (residenceCount["모름"] || 0) + 1;
+      residenceCount["알 수 없음"] = (residenceCount["알 수 없음"] || 0) + 1;
     } else {
       residenceCount[subRegion] = (residenceCount[subRegion] || 0) + 1;
     }
@@ -162,7 +162,7 @@ export const calculateResidenceData = (
       label,
       count,
       value: Math.round((count / totalCount) * 100),
-      color: label === "모름" ? "#9ca3af" : colors[index % colors.length],
+      color: label === "알 수 없음" ? "#9ca3af" : colors[index % colors.length],
     }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 10); // 상위 10개만
@@ -180,7 +180,7 @@ export const calculatePanelSourceData = (
   data.result.results.forEach((result) => {
     const panel = result.demographic_info.panel;
     if (panel === null || panel === undefined || panel === "") {
-      panelCount["모름"] = (panelCount["모름"] || 0) + 1;
+      panelCount["알 수 없음"] = (panelCount["알 수 없음"] || 0) + 1;
     } else {
       panelCount[panel] = (panelCount[panel] || 0) + 1;
     }
@@ -191,7 +191,7 @@ export const calculatePanelSourceData = (
     "U+": "#10b981",
     SKT: "#f59e0b",
     LG: "#ec4899",
-    모름: "#9ca3af",
+    "알 수 없음": "#9ca3af",
   };
 
   return Object.entries(panelCount)

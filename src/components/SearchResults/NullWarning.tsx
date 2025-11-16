@@ -6,8 +6,8 @@ const NullWarning = () => {
           ⓘ
         </div>
         <p className="text-sm text-blue-800">
-          '모름'은 해당 설문에 질문이 없었거나(null) 패널이 미기입한 경우를
-          의미합니다.
+          '알 수 없음'은 해당 설문에 질문이 없었거나(null) 패널이 미기입한
+          경우를 의미합니다.
         </p>
       </div>
     </>

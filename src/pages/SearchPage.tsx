@@ -7,19 +7,26 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
 const SearchPage = () => {
-  const { query, setQuery, task_id, addSearchHistory } = useSearch();
+  const { query, setQuery, addSearchHistory } = useSearch();
   const { mutate, isPending, isSuccess, reset } = usePostSearch();
   const navigate = useNavigate();
   const isInitialized = useRef(false);
 
-  // 페이지 마운트 시 한 번만 검색어 초기화
+  // 페이지 마운트시 검색어 초기화
   useEffect(() => {
     if (!isInitialized.current) {
       setQuery("");
       isInitialized.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [setQuery]);
+
+  // 검색 성공 시 결과 페이지로 이동
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("🔴 mutate가 성공해서 결과 페이지로 navigate");
+      navigate("/search/results");
+    }
+  }, [isSuccess, navigate]);
 
   const handleSearch = async (searchQuery: string) => {
     console.log("🔴 사용자가 입력한 검색어: ", searchQuery);
@@ -31,17 +38,8 @@ const SearchPage = () => {
     // 검색 내역에 추가
     addSearchHistory(searchQuery);
 
-    mutate({ query: searchQuery });
+    mutate({ query: query, use_vector_search: true, page: 1 });
   };
-
-  useEffect(() => {
-    console.log("🔴 mutate가 성공해서 결과 페이지로 navigate: ", isSuccess);
-
-    // mutate가 성공하고, 그로 인해 task_id가 생겼다면 결과 페이지로 navigate
-    if (isSuccess && task_id) {
-      navigate(`/search/status/${task_id}`); // 백엔드 api 개발 이후, status_url로 변경 예정
-    }
-  }, [isSuccess, task_id, navigate]);
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">

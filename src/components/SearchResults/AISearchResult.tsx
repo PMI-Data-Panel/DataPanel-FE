@@ -1,10 +1,10 @@
 import { Download, Star } from "lucide-react";
-import type { ResponseSearchPullingDto } from "../../types/search";
 import type { MostFrequentValues } from "../../utils/getMostFrequentValues";
+import type { ResponseSearchNlDto } from "../../types/search";
 
 interface AISearchResultProps {
   query: string;
-  data: ResponseSearchPullingDto;
+  data: ResponseSearchNlDto;
   mostFrequentValues: MostFrequentValues;
 }
 
@@ -57,7 +57,7 @@ const AISearchResult = ({
         </div>
         <p className="text-gray-700 leading-relaxed">
           '{query}'라는 검색어로 총{" "}
-          <span className="font-semibold">{data.result.results.length}명</span>
+          <span className="font-semibold">{data.total_hits}명</span>
           의 관련 패널을 찾았습니다.
           <br /> {generateSummary()}
         </p>
