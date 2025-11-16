@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 import { useState, useEffect } from "react";
 import { SearchContext } from "../context/SearchContext";
 import type { SearchHistoryItem } from "../context/SearchContext";
+import type { ResponseSearchNlDto } from "../types/search";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 
@@ -13,6 +14,8 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
 
   const [query, setQueryState] = useState<string>("");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+  const [searchResults, setSearchResults] =
+    useState<ResponseSearchNlDto | null>(null);
 
   // 초기 로드 시 localStorage에서 값 가져오기
   useEffect(() => {
@@ -82,7 +85,9 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
       value={{
         query,
         searchHistory,
+        searchResults,
         setQuery,
+        setSearchResults,
         addSearchHistory,
         removeSearchHistory,
         clearSearchHistory,

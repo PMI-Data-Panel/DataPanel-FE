@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { ResponseSearchNlDto } from "../types/search";
 
 export interface SearchHistoryItem {
   id: string;
@@ -10,7 +11,9 @@ export interface SearchHistoryItem {
 interface SearchContextType {
   query: string;
   searchHistory: SearchHistoryItem[];
+  searchResults: ResponseSearchNlDto | null;
   setQuery: (query: string) => Promise<void>;
+  setSearchResults: (data: ResponseSearchNlDto | null) => void;
   addSearchHistory: (query: string, resultCount?: number) => void;
   removeSearchHistory: (id: string) => void;
   clearSearchHistory: () => void;
@@ -19,7 +22,9 @@ interface SearchContextType {
 export const SearchContext = createContext<SearchContextType>({
   query: "",
   searchHistory: [],
+  searchResults: null,
   setQuery: async () => {},
+  setSearchResults: () => {},
   addSearchHistory: () => {},
   removeSearchHistory: () => {},
   clearSearchHistory: () => {},

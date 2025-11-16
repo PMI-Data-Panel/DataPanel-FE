@@ -8,3 +8,11 @@ export const postSearchNl = async (
   const { data } = await axiosInstance.post("/search/nl", body);
   return data;
 };
+
+// (GET) /visualization/user-info/survey_responses_merged
+export const getVisualization = async () => {
+  const { data } = await axiosInstance.get(
+    "/visualization/user-info/survey_responses_merged"
+  );
+  return data;
+};

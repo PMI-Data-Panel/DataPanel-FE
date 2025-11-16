@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
 const SearchPage = () => {
-  const { query, setQuery, addSearchHistory } = useSearch();
-  const { mutate, isPending, isSuccess, reset } = usePostSearch();
+  const { query, setQuery, addSearchHistory, setSearchResults } = useSearch();
+  const { mutate, isPending, isSuccess, data, reset } = usePostSearch();
   const navigate = useNavigate();
   const isInitialized = useRef(false);
 
@@ -20,13 +20,14 @@ const SearchPage = () => {
     }
   }, [setQuery]);
 
-  // 검색 성공 시 결과 페이지로 이동
+  // 검색 성공 시 결과를 context에 저장하고 페이지 이동
   useEffect(() => {
-    if (isSuccess) {
-      console.log("🔴 mutate가 성공해서 결과 페이지로 navigate");
+    if (isSuccess && data) {
+      console.log("🔴 검색 성공, 결과 저장 후 navigate", data);
+      setSearchResults(data);
       navigate("/search/results");
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, data, setSearchResults, navigate]);
 
   const handleSearch = async (searchQuery: string) => {
     console.log("🔴 사용자가 입력한 검색어: ", searchQuery);
