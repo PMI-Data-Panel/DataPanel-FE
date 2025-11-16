@@ -12,8 +12,6 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
   const historyStorage = useLocalStorage(LOCAL_STORAGE_KEY.searchHistory);
 
   const [query, setQueryState] = useState<string>("");
-  const [taskId, setTaskIdState] = useState<string>("");
-  const [statusUrl] = useState<string>("");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
 
   // 초기 로드 시 localStorage에서 값 가져오기
@@ -38,10 +36,6 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
   const setQuery = async (newQuery: string) => {
     setQueryState(newQuery);
     queryStorage.setItem(newQuery);
-  };
-
-  const setTaskId = async (newTaskId: string) => {
-    setTaskIdState(newTaskId);
   };
 
   // 검색 내역 추가
@@ -87,11 +81,8 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
     <SearchContext.Provider
       value={{
         query,
-        task_id: taskId,
-        status_url: statusUrl,
         searchHistory,
         setQuery,
-        setTaskId,
         addSearchHistory,
         removeSearchHistory,
         clearSearchHistory,

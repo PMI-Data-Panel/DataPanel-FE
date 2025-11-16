@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Home } from "lucide-react";
-import usePollingSearch from "../hooks/queries/usePollingSearch";
 import { useSearch } from "../hooks/useSearch";
 import NotFoundPage from "./NotFoundPage";
 import SearchLoading from "../components/SearchResults/SearchLoading";
@@ -21,10 +20,11 @@ import { getAllMostFrequentValues } from "../utils/getMostFrequentValues";
 import BarChart from "../components/common/graph/BarChart";
 import NestedDonutChart from "../components/common/graph/NestedDonutChart";
 import DonutChart from "../components/common/graph/DonutChart";
+import usePostSearch from "../hooks/queries/usePostSearch";
 
 const SearchResults = () => {
   const { query } = useSearch();
-  const { data, isError, isSuccess, isPending } = usePollingSearch();
+  const { data, isError, isPending, isSuccess } = usePostSearch();
   const [additionalQuery, setAdditionalQuery] = useState(""); // 추후 가능하다면 추가검색 구현 예정
   const navigate = useNavigate();
 
@@ -71,7 +71,7 @@ const SearchResults = () => {
 
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 p-15">
-        {isSuccess && data && data.state === "SUCCESS" && (
+        {isSuccess && data && (
           <div className="space-y-6">
             {/* 제목 */}
             <div className="flex items-center justify-between">
