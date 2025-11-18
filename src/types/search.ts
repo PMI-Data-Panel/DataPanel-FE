@@ -77,10 +77,11 @@ export interface ResponseVisualization {
 }
 
 // 공통 분포 인터페이스
-interface Distribution<T> {
+export interface Distribution<T extends string | number = string> {
   label: T;
   value: number;
   percentage: number;
+  [key: string]: string | number; // Recharts 호환성을 위한 인덱스 시그니처
 }
 
 type GenderLabel = "남성" | "여성" | "미정";
@@ -119,19 +120,19 @@ type RegionLabel =
   | "세종특별자치시"
   | "전북특별자치도";
 type MarryLabel = "기혼" | "미혼" | "기타(사별/이혼 등)";
-type FamilyLabel = "3명" | "4명" | "2명" | "1명(혼자 거주)" | "5명 이상";
+type FamilyLabel = "1명(혼자 거주)" | "2명" | "3명" | "4명" | "5명 이상";
 type IncomeLabel =
+  | "월 100만원 미만"
+  | "월 100~199만원"
   | "월 200~299만원"
   | "월 300~399만원"
-  | "월 100만원 미만"
   | "월 400~499만원"
   | "월 500~599만원"
-  | "월 1000만원 이상"
   | "월 600~699만원"
   | "월 700~799만원"
   | "월 800~899만원"
-  | "월 100~199만원"
-  | "월 900~999만원";
+  | "월 900~999만원"
+  | "월 1000만원 이상";
 type VehicleLabel = "보유" | "미보유";
 type SmokerLabel = "흡연" | "비흡연";
 type DrinkerLabel = "음주" | "비음주";

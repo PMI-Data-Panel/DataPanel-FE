@@ -1,5 +1,29 @@
 import { Tooltip, Cell, ResponsiveContainer, Pie, PieChart } from "recharts";
-import type { BarData } from "../../../types/graph";
+import type { Distribution } from "../../../types/search";
+
+const INNER_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#14b8a6",
+  "#f97316",
+];
+
+const OUTER_COLORS = [
+  "#60a5fa",
+  "#14b8a6",
+  "#f59e0b",
+  "#ec4899",
+  "#8b5cf6",
+  "#10b981",
+  "#f97316",
+  "#06b6d4",
+  "#a855f7",
+  "#84cc16",
+];
 
 const NestedDonutChart = ({
   innerData,
@@ -8,11 +32,11 @@ const NestedDonutChart = ({
   onInnerClick,
   onOuterClick,
 }: {
-  innerData: BarData[];
-  outerData: BarData[];
+  innerData: Distribution[];
+  outerData: Distribution[];
   title: string;
-  onInnerClick?: (data: BarData) => void;
-  onOuterClick?: (data: BarData) => void;
+  onInnerClick?: (data: Distribution) => void;
+  onOuterClick?: (data: Distribution) => void;
 }) => {
   // 툴팁
   const CustomTooltip = ({
@@ -20,15 +44,15 @@ const NestedDonutChart = ({
     payload,
   }: {
     active?: boolean;
-    payload?: Array<{ name: string; value: number; payload: BarData }>;
+    payload?: Array<{ name: string; value: number; payload: Distribution }>;
   }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
         <div className="bg-gray-900 text-white px-3 py-2 rounded shadow-lg text-xs">
           <div className="font-semibold">{data.name}</div>
-          <div>비율: {data.value}%</div>
-          <div>인원: {data.payload.count}명</div>
+          <div>비율: {data.payload.percentage.toFixed(2)}%</div>
+          <div>인원: {data.payload.value}명</div>
         </div>
       );
     }
@@ -38,7 +62,7 @@ const NestedDonutChart = ({
   // 라벨 렌더링
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderLabel = (props: any) => {
-    return `${props.value}%`;
+    return `${props.value.toFixed(1)}%`;
   };
 
   return (
@@ -56,15 +80,18 @@ const NestedDonutChart = ({
             innerRadius={0}
             outerRadius={80}
             paddingAngle={2}
-            dataKey="value"
+            dataKey="percentage"
             nameKey="label"
             label={renderLabel}
             labelLine={false}
             onClick={(data) => onInnerClick?.(data)}
             cursor="pointer"
           >
-            {innerData.map((entry, index) => (
-              <Cell key={`inner-${index}`} fill={entry.color} />
+            {innerData.map((_, index) => (
+              <Cell
+                key={`inner-${index}`}
+                fill={INNER_COLORS[index % INNER_COLORS.length]}
+              />
             ))}
           </Pie>
           {/* 바깥쪽 원 - 거주지 (sub_region) */}
@@ -75,15 +102,18 @@ const NestedDonutChart = ({
             innerRadius={90}
             outerRadius={140}
             paddingAngle={1}
-            dataKey="value"
+            dataKey="percentage"
             nameKey="label"
             label={renderLabel}
             labelLine={false}
             onClick={(data) => onOuterClick?.(data)}
             cursor="pointer"
           >
-            {outerData.map((entry, index) => (
-              <Cell key={`outer-${index}`} fill={entry.color} />
+            {outerData.map((_, index) => (
+              <Cell
+                key={`outer-${index}`}
+                fill={OUTER_COLORS[index % OUTER_COLORS.length]}
+              />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
@@ -104,7 +134,9 @@ const NestedDonutChart = ({
               >
                 <div
                   className="w-3 h-3 rounded-sm"
-                  style={{ backgroundColor: entry.color }}
+                  style={{
+                    backgroundColor: INNER_COLORS[index % INNER_COLORS.length],
+                  }}
                 />
                 <span className="text-xs text-gray-600">{entry.label}</span>
               </div>
@@ -124,7 +156,9 @@ const NestedDonutChart = ({
               >
                 <div
                   className="w-3 h-3 rounded-sm"
-                  style={{ backgroundColor: entry.color }}
+                  style={{
+                    backgroundColor: OUTER_COLORS[index % OUTER_COLORS.length],
+                  }}
                 />
                 <span className="text-xs text-gray-600">{entry.label}</span>
               </div>
