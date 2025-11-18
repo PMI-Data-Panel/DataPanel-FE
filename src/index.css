@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+/* 반응형 웹을 위한 기본 설정 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* 모바일에서 텍스트 크기 자동 조정 방지 */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  
+  /* 부드러운 스크롤 */
+  scroll-behavior: smooth;
+}
+
+body {
+  /* 모바일에서 탭 하이라이트 제거 */
+  -webkit-tap-highlight-color: transparent;
+  
+  /* 오버스크롤 방지 (iOS Safari) */
+  overscroll-behavior: none;
+  
+  /* 최소 너비 설정으로 레이아웃 깨짐 방지 */
+  min-width: 320px;
+  
+  /* 가로 스크롤 방지 */
+  overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+/* 루트 요소도 가로 스크롤 방지 */
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+/* 이미지 반응형 처리 */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Firefox용 스크롤바 숨기기 */
 .scrollbar-hide {
   scrollbar-width: none;

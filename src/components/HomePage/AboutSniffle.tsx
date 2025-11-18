@@ -3,24 +3,28 @@ import Button from "../common/Button";
 const AboutSniffle = () => {
   return (
     <>
-      <div id="about">
-        <section className="py-4 px-4 bg-gray-50">
+      <div id="about" className="w-full max-w-full overflow-x-hidden">
+        <section className="py-6 md:py-8 px-4 md:px-6 bg-gray-50">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">About Sniffle</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">
+              About Sniffle
+            </h2>
+            <p className="text-sm md:text-base text-gray-600 leading-relaxed px-2">
               온라인 패널 설문조사 데이터를 기업의 비즈니스 인사이트로 전환하는
-              <br />
+              <br className="hidden sm:block" />
               데이터 분석 플랫폼입니다
             </p>
           </div>
         </section>
 
-        <section className="py-10 px-20">
+        <section className="py-8 md:py-10 lg:py-12 px-4 md:px-8 lg:px-20">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-                <p className="text-gray-600 leading-relaxed mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-12 items-center">
+              <div className="order-2 md:order-1">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">
+                  Our Mission
+                </h2>
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4 md:mb-6">
                   DataPanel은 5,000명 이상의 온라인 패널로부터 수집된 35개
                   분야의 설문조사 응답 데이터를 분석하여, 다양한 기업체에게
                   시각적 분석 결과를 제공하는 데이터 분석 서비스입니다. 복잡한
@@ -31,10 +35,13 @@ const AboutSniffle = () => {
                 </p>
                 <Button variant="primary" text="자세히 보기" size="sm" />
               </div>
-              <img
-                src="/LandingPageImage.png"
-                className="w-full h-auto rounded-2xl shadow-lg"
-              />
+              <div className="order-1 md:order-2">
+                <img
+                  src="/LandingPageImage.png"
+                  alt="Landing Page"
+                  className="w-full h-auto rounded-lg md:rounded-2xl shadow-lg"
+                />
+              </div>
             </div>
           </div>
         </section>

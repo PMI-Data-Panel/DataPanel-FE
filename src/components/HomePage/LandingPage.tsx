@@ -14,7 +14,7 @@ const LandingPage = () => {
 
   return (
     <>
-      <section className="flex flex-col items-center justify-center min-h-screen px-4 gap-5">
+      <section className="flex flex-col items-center justify-center min-h-[66.67vh] lg:min-h-screen px-4 gap-5">
         <LandingText
           titleText1="AI 기반 패널데이터 검색으로"
           titleTextFront="시장의 "

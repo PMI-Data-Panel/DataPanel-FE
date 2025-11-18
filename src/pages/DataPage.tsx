@@ -10,12 +10,12 @@ const DataPage = () => {
   console.log(data);
 
   return (
-    <div className="min-h-screen">
-      <div className="flex items-center justify-center my-15 text-3xl font-bold">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
+      <div className="flex items-center justify-center my-8 md:my-15 px-4 text-2xl md:text-3xl font-bold">
         전체 패널 데이터
       </div>
 
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5 p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 px-3 md:px-5 py-5">
         {data?.gender_distribution ? (
           <PieChart data={data.gender_distribution} title="성별" />
         ) : null}
@@ -38,7 +38,7 @@ const DataPage = () => {
           <BarChart data={data.family_size_distribution} title="가족수" />
         ) : null}
       </div>
-      <div className="grid md:grid-cols-2 gap-2 p-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 px-3 md:px-5 pb-5">
         {data?.region_distribution ? (
           <TreeMap data={data.region_distribution} title="거주지" />
         ) : null}

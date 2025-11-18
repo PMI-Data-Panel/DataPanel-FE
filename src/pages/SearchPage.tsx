@@ -1,6 +1,7 @@
 import LandingText from "../components/common/LandingText";
 import SearchForm from "../components/SearchPage/SearchForm";
 import Sidebar from "../components/SearchPage/Sidebar";
+import MobileSidebar from "../components/SearchPage/MobileSidebar";
 import { useSearch } from "../hooks/useSearch";
 import usePostSearch from "../hooks/queries/usePostSearch";
 import { useNavigate } from "react-router-dom";
@@ -44,17 +45,19 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 relative">
-      {/* 좌측에 호버하면 나오는 사이드바 */}
-      <Sidebar />
+    <div className="flex h-screen bg-gray-50 relative w-full max-w-full overflow-hidden">
+      {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
 
       {/* 검색중이라면 로딩화면 */}
       {isPending ? (
         <Loading />
       ) : (
         // 검색 메인화면
-        <div className="flex-1 flex flex-col transition-all duration-300">
-          <div className="flex-1 flex flex-col items-center mt-60 px-10">
+        <div className="flex-1 flex items-center justify-center overflow-hidden md:overflow-auto">
+          <div className="flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-10 -mt-10 md:-mt-16">
             {/* 검색 메인창 타이틀 */}
             <LandingText
               titleText1="패널 분석 AI"
@@ -64,17 +67,20 @@ const SearchPage = () => {
             />
 
             {/* 검색 폼 */}
-            <div className="w-full max-w-2xl mt-13">
+            <div className="w-full max-w-2xl mt-8 md:mt-10 lg:mt-13">
               <SearchForm
                 searchQuery={query}
                 setSearchQuery={setQuery}
                 onSearch={handleSearch}
                 isSearching={isPending}
               />
-              <p className="text-xs text-gray-500 mt-5 text-center">
+              <p className="text-xs md:text-sm text-gray-500 mt-3 md:mt-5 text-center px-2">
                 '20대 여성 중 냉장고 보유자'와 같이 입력해 보세요.
               </p>
             </div>
+
+            {/* 모바일 사이드바 (검색 히스토리) */}
+            <MobileSidebar />
           </div>
         </div>
       )}

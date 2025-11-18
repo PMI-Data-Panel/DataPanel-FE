@@ -111,23 +111,23 @@ const TreeMapComponent = ({
     : (data as TreeMapData[]);
 
   return (
-    <div className="bg-blue-50 rounded-lg shadow-sm p-6 flex flex-col items-center justify-center">
+    <div className="bg-blue-50 rounded-lg shadow-sm p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full overflow-hidden">
       {title && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">
+          {title}
+        </h3>
       )}
-      <Treemap
-        style={{
-          width: "100%",
-          maxWidth: "500px",
-          maxHeight: "80vh",
-          aspectRatio: 4 / 3,
-        }}
-        data={treeMapData}
-        dataKey={dataKey}
-        stroke="#fff"
-        fill="#8884d8"
-        content={CustomizedContent}
-      />
+      <div className="w-full" style={{ maxWidth: "500px", aspectRatio: "4/3" }}>
+        <Treemap
+          width={500}
+          height={375}
+          data={treeMapData}
+          dataKey={dataKey}
+          stroke="#fff"
+          fill="#8884d8"
+          content={CustomizedContent}
+        />
+      </div>
     </div>
   );
 };
