@@ -7,6 +7,7 @@ export interface RequestSearchNlDto {
 
 // (POST) /search/nl - response
 export interface ResponseSearchNlDto {
+  requested_count: number;
   query: string;
   total_hits: number;
   max_score: number;
@@ -15,7 +16,7 @@ export interface ResponseSearchNlDto {
   page: number;
   page_size: number;
   has_more: boolean;
-  llm_summary: LLMSumamry;
+  llm_summary: LLMSummary;
 }
 
 interface QA_Pairs {
@@ -26,6 +27,7 @@ interface QA_Pairs {
 export interface SearchNlResults {
   user_id: string;
   score: number;
+  timestamp: string;
   survey_datetime: string;
   demographic_info: {
     age_group: string;
@@ -46,10 +48,11 @@ export interface SearchNlResults {
   highlights: boolean;
 }
 
-interface LLMSumamry {
+interface LLMSummary {
   model: string;
   generated_at: string;
   summary: {
+    behavioral_summary: string;
     highlights: string[];
     demographic_summary: string[];
     data_signals: string[];
@@ -58,7 +61,7 @@ interface LLMSumamry {
 }
 
 // (GET) /visualization/user-info/survey_responses_merged - response
-export interface ResponseVIsualization {
+export interface ResponseVisualization {
   index_name: string;
   total_docs: number;
   gender_distribution: Gender[];

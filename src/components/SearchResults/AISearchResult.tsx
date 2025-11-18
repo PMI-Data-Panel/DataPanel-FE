@@ -1,41 +1,12 @@
 import { Download, Star } from "lucide-react";
-import type { MostFrequentValues } from "../../utils/getMostFrequentValues";
 import type { ResponseSearchNlDto } from "../../types/search";
 
 interface AISearchResultProps {
   query: string;
   data: ResponseSearchNlDto;
-  mostFrequentValues: MostFrequentValues;
 }
 
-const AISearchResult = ({
-  query,
-  data,
-  mostFrequentValues,
-}: AISearchResultProps) => {
-  // 최빈값을 활용한 요약 문구 생성
-  const generateSummary = () => {
-    const parts: string[] = [];
-
-    if (mostFrequentValues.age) {
-      parts.push(`연령대는 주로 ${mostFrequentValues.age.label}`);
-    }
-
-    if (mostFrequentValues.gender) {
-      parts.push(
-        `성별은 ${mostFrequentValues.gender.label}이 ${mostFrequentValues.gender.value}%`
-      );
-    }
-
-    if (mostFrequentValues.region) {
-      parts.push(`${mostFrequentValues.region.label}에 거주`);
-    }
-
-    return parts.length > 0
-      ? parts.join(", ") + "입니다."
-      : "데이터를 분석 중입니다.";
-  };
-
+const AISearchResult = ({ query, data }: AISearchResultProps) => {
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -51,12 +22,39 @@ const AISearchResult = ({
             </button>
           </div>
         </div>
-        <p className="text-gray-700 leading-relaxed">
-          '{query}'라는 검색어로 총{" "}
-          <span className="font-semibold">{data.total_hits}명</span>
-          의 관련 패널을 찾았습니다.
-          <br /> {generateSummary()}
-        </p>
+
+        <div className="space-y-4">
+          <p className="text-gray-700 leading-relaxed">
+            '{query}'라는 검색어로 총{" "}
+            <span className="font-semibold">
+              {data.requested_count !== 1000
+                ? data.requested_count
+                : data.results.length}
+              명
+            </span>
+            의 관련 패널을 찾았습니다.
+          </p>
+
+          {/* Behavioral Summary */}
+          {data.llm_summary?.summary?.behavioral_summary && (
+            <p className="text-gray-700 leading-relaxed">
+              {data.llm_summary.summary.behavioral_summary}
+            </p>
+          )}
+
+          {/* Highlights - 불렛 리스트 */}
+          {data.llm_summary?.summary?.highlights &&
+            data.llm_summary.summary.highlights.length > 0 && (
+              <ul className="list-disc list-inside space-y-2 text-gray-700">
+                {data.llm_summary.summary.highlights.map((highlight, idx) => (
+                  <li key={idx} className="leading-relaxed">
+                    {highlight}
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
+
         <div className="mt-4">
           <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
             분석 완료
