@@ -1,4 +1,8 @@
-import type { RequestSearchNlDto, ResponseSearchNlDto } from "../types/search";
+import type {
+  RequestSearchNlDto,
+  ResponseSearchNlDto,
+  ResponseVisualization,
+} from "../types/search";
 import { axiosInstance } from "./axios";
 
 // (POST) /search/nl
@@ -10,7 +14,7 @@ export const postSearchNl = async (
 };
 
 // (GET) /visualization/user-info/survey_responses_merged
-export const getVisualization = async () => {
+export const getVisualization = async (): Promise<ResponseVisualization> => {
   const { data } = await axiosInstance.get(
     "/visualization/user-info/survey_responses_merged"
   );

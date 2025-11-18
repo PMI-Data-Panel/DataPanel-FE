@@ -17,7 +17,6 @@ import {
   calculateResidenceData,
   checkHasNullValues,
 } from "../utils/chartDataCalculators";
-import { getAllMostFrequentValues } from "../utils/getMostFrequentValues";
 import BarChart from "../components/common/graph/BarChart";
 import NestedDonutChart from "../components/common/graph/NestedDonutChart";
 
@@ -37,13 +36,6 @@ const SearchResults = () => {
   const regionData = useMemo(() => calculateRegionData(data), [data]);
   const residenceData = useMemo(() => calculateResidenceData(data), [data]);
   const hasNullValues = useMemo(() => checkHasNullValues(data), [data]);
-
-  // 최빈값 계산
-  const mostFrequentValues = useMemo(
-    () =>
-      getAllMostFrequentValues(genderData, ageData, regionData, residenceData),
-    [genderData, ageData, regionData, residenceData]
-  );
 
   // 그래프 클릭 시 해당 항목 필터링
   const handleGenderClick = (clickedData: BarData) => {
@@ -118,11 +110,7 @@ const SearchResults = () => {
             </div>
 
             {/* AI 분석 요약 */}
-            <AISearchResult
-              query={query}
-              data={data}
-              mostFrequentValues={mostFrequentValues}
-            />
+            <AISearchResult query={query} data={data} />
 
             {/* 이 패널들 중에서 추가 검색 */}
             <AdditionalSearch
