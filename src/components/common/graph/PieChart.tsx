@@ -1,4 +1,4 @@
-import { Cell, Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { PieLabelRenderProps } from "recharts";
 import type { Distribution } from "../../../types/search";
 
@@ -64,35 +64,32 @@ const PieChartComponent = ({
   isAnimationActive = true,
 }: PieChartComponentProps) => {
   return (
-    <div className="bg-blue-50 shadow-xl rounded-lg p-6 flex flex-col items-center justify-center">
+    <div className="bg-blue-50 shadow-xl rounded-lg p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full">
       {title && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">
+          {title}
+        </h3>
       )}
-      <PieChart
-        width={300}
-        height={300}
-        style={{
-          maxWidth: "500px",
-          maxHeight: "80vh",
-        }}
-      >
-        <Pie
-          data={data}
-          labelLine={false}
-          label={renderCustomizedLabel}
-          fill="#8884d8"
-          dataKey="value"
-          nameKey="label"
-          isAnimationActive={isAnimationActive}
-        >
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${entry.label}`}
-              fill={COLORS[index % COLORS.length]}
-            />
-          ))}
-        </Pie>
-      </PieChart>
+      <ResponsiveContainer width="100%" height={300} maxHeight={500}>
+        <PieChart>
+          <Pie
+            data={data}
+            labelLine={false}
+            label={renderCustomizedLabel}
+            fill="#8884d8"
+            dataKey="value"
+            nameKey="label"
+            isAnimationActive={isAnimationActive}
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${entry.label}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 };

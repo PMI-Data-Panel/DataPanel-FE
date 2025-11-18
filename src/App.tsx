@@ -46,7 +46,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full max-w-full min-h-screen overflow-x-hidden">
       <QueryClientProvider client={queryClient}>
         <SearchProvider>
           <RouterProvider router={router} />

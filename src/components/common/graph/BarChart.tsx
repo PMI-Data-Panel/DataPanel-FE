@@ -52,19 +52,24 @@ const BarChart = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">
+    <div className="bg-white rounded-lg shadow-sm p-3 md:p-6 w-full max-w-full overflow-hidden">
+      <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-6 text-center">
         {title}
       </h3>
       <ResponsiveContainer width="100%" height={300}>
         <RechartsBarChart
           data={data}
           layout="vertical"
-          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" domain={[0, 100]} />
-          <YAxis dataKey="label" type="category" width={60} />
+          <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
+          <YAxis
+            dataKey="label"
+            type="category"
+            width={50}
+            tick={{ fontSize: 11 }}
+          />
           <Tooltip
             content={<CustomTooltip />}
             cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}

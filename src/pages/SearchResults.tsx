@@ -89,22 +89,29 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex relative">
-      {/* 좌측에 호버하면 나오는 사이드바 */}
-      <Sidebar />
+    <div className="min-h-screen bg-gray-50 flex relative w-full max-w-full overflow-x-hidden">
+      {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 p-15">
+      <div className="flex-1 w-full min-w-0 p-4 md:pl-16 md:pr-8 md:py-8 lg:pl-20 lg:pr-15 lg:py-15">
         {data && (
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6 w-full max-w-full">
             {/* 제목 */}
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900">분석 결과</h1>
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+                분석 결과
+              </h1>
               <button
                 onClick={() => navigate("/search")}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="px-3 py-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1 md:gap-2 flex-shrink-0"
               >
-                <Home className="w-5 h-5" />
+                <Home className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline text-sm md:text-base">
+                  홈
+                </span>
               </button>
             </div>
 
@@ -122,7 +129,7 @@ const SearchResults = () => {
             {hasNullValues && <NullWarning />}
 
             {/* 막대그래프 섹션 */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* 성별 분포 */}
               {genderData.length > 0 && (
                 <BarChart
@@ -143,7 +150,7 @@ const SearchResults = () => {
             </div>
 
             {/* 도넛 차트 섹션 */}
-            <div className="grid grid-cols-2 gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
               {/* 지역 분포 (이중 도넛 차트) */}
               {regionData.length > 0 && residenceData.length > 0 && (
                 <NestedDonutChart

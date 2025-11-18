@@ -19,15 +19,17 @@ const Loading = () => {
   }, [messages.length]);
 
   return (
-    <div className="flex-1 flex flex-col items-center mt-90">
+    <div className="flex-1 flex flex-col items-center justify-center w-full max-w-full overflow-hidden px-4 -mt-10 md:-mt-20">
       {/* 메시지 */}
-      <div className="text-3xl font-semibold text-gray-700 flex items-center gap-2">
-        <span>{messages[messageIndex].replace("...", "")}</span>
+      <div className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-700 flex items-center gap-2 text-center">
+        <span className="break-words">
+          {messages[messageIndex].replace("...", "")}
+        </span>
         {/* 물결 애니메이션 점 3개 */}
-        <span className="flex gap-1">
-          <span className="w-1.5 h-1.5 bg-gray-700 rounded-full animate-wave-dot1"></span>
-          <span className="w-1.5 h-1.5 bg-gray-700 rounded-full animate-wave-dot2"></span>
-          <span className="w-1.5 h-1.5 bg-gray-700 rounded-full animate-wave-dot3"></span>
+        <span className="flex gap-1 flex-shrink-0">
+          <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-gray-700 rounded-full animate-wave-dot1"></span>
+          <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-gray-700 rounded-full animate-wave-dot2"></span>
+          <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-gray-700 rounded-full animate-wave-dot3"></span>
         </span>
       </div>
     </div>

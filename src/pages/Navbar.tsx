@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Button from "../components/common/Button";
 import { PawPrint } from "lucide-react";
 
 const Navbar = () => {
@@ -26,12 +25,17 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between items-center px-6 py-2.5 bg-black text-white">
-      <strong className="cursor-pointer" onClick={() => navigate("/")}>
-        <PawPrint size={24} />
+    <div className="flex items-center px-3 md:px-6 py-2.5 bg-black text-white w-full max-w-full overflow-x-hidden">
+      {/* 로고 - 왼쪽 고정 */}
+      <strong
+        className="cursor-pointer flex-shrink-0 mr-3 md:mr-0"
+        onClick={() => navigate("/")}
+      >
+        <PawPrint size={20} className="md:w-6 md:h-6" />
       </strong>
 
-      <div className="flex space-x-15 font-bold">
+      {/* 메뉴 - 모바일에서 균등 분배, 데스크탑에서 오른쪽 정렬 */}
+      <div className="flex flex-1 justify-around md:justify-end md:space-x-8 lg:space-x-15 font-bold text-sm md:text-base">
         <span
           className="cursor-pointer"
           onClick={() => scrollToSection("about")}
@@ -50,14 +54,6 @@ const Navbar = () => {
         <span className="cursor-pointer" onClick={() => navigate("/search")}>
           Search
         </span>
-      </div>
-
-      <div>
-        <Button
-          variant="primary"
-          text="로그인"
-          onClick={() => navigate("/login")}
-        />
       </div>
     </div>
   );
