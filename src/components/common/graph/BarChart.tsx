@@ -13,9 +13,11 @@ import type { BarData } from "../../../types/graph";
 const BarChart = ({
   chartData,
   title,
+  onBarClick,
 }: {
   chartData: BarData[];
   title: string;
+  onBarClick?: (data: BarData) => void;
 }) => {
   // 툴팁
   const CustomTooltip = ({
@@ -56,7 +58,16 @@ const BarChart = ({
             content={<CustomTooltip />}
             cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
           />
-          <Bar dataKey="value" radius={[0, 8, 8, 0]} cursor="pointer">
+          <Bar
+            dataKey="value"
+            radius={[0, 8, 8, 0]}
+            cursor="pointer"
+            onClick={(data: { payload?: BarData }) => {
+              if (data.payload) {
+                onBarClick?.(data.payload);
+              }
+            }}
+          >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}

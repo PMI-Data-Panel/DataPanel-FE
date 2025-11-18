@@ -4,9 +4,11 @@ import type { BarData } from "../../../types/graph";
 const DonutChart = ({
   chartData,
   title,
+  onPieClick,
 }: {
   chartData: BarData[];
   title: string;
+  onPieClick?: (data: BarData) => void;
 }) => {
   // 툴팁
   const CustomTooltip = ({
@@ -70,6 +72,8 @@ const DonutChart = ({
             nameKey="label"
             label={renderLabel}
             labelLine={false}
+            onClick={(data) => onPieClick?.(data)}
+            cursor="pointer"
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />

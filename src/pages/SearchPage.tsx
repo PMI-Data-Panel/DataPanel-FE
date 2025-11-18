@@ -5,6 +5,7 @@ import { useSearch } from "../hooks/useSearch";
 import usePostSearch from "../hooks/queries/usePostSearch";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import Loading from "../components/SearchPage/Loading";
 
 const SearchPage = () => {
   const { query, setQuery, addSearchHistory, setSearchResults } = useSearch();
@@ -47,31 +48,36 @@ const SearchPage = () => {
       {/* 좌측에 호버하면 나오는 사이드바 */}
       <Sidebar />
 
-      {/* 검색 메인화면 */}
-      <div className="flex-1 flex flex-col transition-all duration-300">
-        <div className="flex-1 flex flex-col items-center mt-60 px-10">
-          {/* 검색 메인창 타이틀 */}
-          <LandingText
-            titleText1="패널 분석 AI"
-            subText1="분석하고 싶은 패널 조건을 자연어로 입력하세요."
-            titleTextSize="4xl"
-            subTextSize="md"
-          />
-
-          {/* 검색 폼 */}
-          <div className="w-full max-w-2xl mt-13">
-            <SearchForm
-              searchQuery={query}
-              setSearchQuery={setQuery}
-              onSearch={handleSearch}
-              isSearching={isPending}
+      {/* 검색중이라면 로딩화면 */}
+      {isPending ? (
+        <Loading />
+      ) : (
+        // 검색 메인화면
+        <div className="flex-1 flex flex-col transition-all duration-300">
+          <div className="flex-1 flex flex-col items-center mt-60 px-10">
+            {/* 검색 메인창 타이틀 */}
+            <LandingText
+              titleText1="패널 분석 AI"
+              subText1="분석하고 싶은 패널 조건을 자연어로 입력하세요."
+              titleTextSize="4xl"
+              subTextSize="md"
             />
-            <p className="text-xs text-gray-500 mt-5 text-center">
-              '20대 여성 중 냉장고 보유자'와 같이 입력해 보세요.
-            </p>
+
+            {/* 검색 폼 */}
+            <div className="w-full max-w-2xl mt-13">
+              <SearchForm
+                searchQuery={query}
+                setSearchQuery={setQuery}
+                onSearch={handleSearch}
+                isSearching={isPending}
+              />
+              <p className="text-xs text-gray-500 mt-5 text-center">
+                '20대 여성 중 냉장고 보유자'와 같이 입력해 보세요.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

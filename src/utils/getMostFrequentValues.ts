@@ -21,21 +21,18 @@ export interface MostFrequentValues {
   age: BarData | null;
   region: BarData | null;
   residence: BarData | null;
-  panelSource: BarData | null;
 }
 
 export const getAllMostFrequentValues = (
   genderData: BarData[],
   ageData: BarData[],
   regionData: BarData[],
-  residenceData: BarData[],
-  panelSourceData: BarData[]
+  residenceData: BarData[]
 ): MostFrequentValues => {
   return {
     gender: getMostFrequentValue(genderData),
     age: getMostFrequentValue(ageData),
     region: getMostFrequentValue(regionData),
     residence: getMostFrequentValue(residenceData),
-    panelSource: getMostFrequentValue(panelSourceData),
   };
 };
