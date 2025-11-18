@@ -7,24 +7,26 @@ export const calculateGenderData = (
   if (!data?.results || data.results.length === 0) return [];
 
   const genderCount: Record<string, number> = {};
+  const genderOrder: string[] = []; // 순서 보존용
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
     const gender = result.demographic_info.gender;
-    if (gender === null || gender === undefined || gender === "") {
-      genderCount["알 수 없음"] = (genderCount["알 수 없음"] || 0) + 1;
-    } else {
-      genderCount[gender] = (genderCount[gender] || 0) + 1;
+    const key = gender === null || gender === undefined || gender === ""
+      ? "알 수 없음"
+      : gender;
+
+    if (genderCount[key] === undefined) {
+      genderOrder.push(key); // 처음 나타난 순서 기록
     }
+    genderCount[key] = (genderCount[key] || 0) + 1;
   });
 
-  return Object.entries(genderCount)
-    .map(([label, count]) => ({
-      label,
-      value: count,
-      percentage: Number(((count / totalCount) * 100).toFixed(2)),
-    }))
-    .sort((a, b) => b.value - a.value);
+  return genderOrder.map((label) => ({
+    label,
+    value: genderCount[label],
+    percentage: Number(((genderCount[label] / totalCount) * 100).toFixed(2)),
+  }));
 };
 
 // 연령대 분포 데이터 계산
@@ -79,24 +81,26 @@ export const calculateRegionData = (
   if (!data?.results || data.results.length === 0) return [];
 
   const regionCount: Record<string, number> = {};
+  const regionOrder: string[] = []; // 순서 보존용
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
     const region = result.demographic_info.region;
-    if (region === null || region === undefined || region === "") {
-      regionCount["알 수 없음"] = (regionCount["알 수 없음"] || 0) + 1;
-    } else {
-      regionCount[region] = (regionCount[region] || 0) + 1;
+    const key = region === null || region === undefined || region === ""
+      ? "알 수 없음"
+      : region;
+
+    if (regionCount[key] === undefined) {
+      regionOrder.push(key); // 처음 나타난 순서 기록
     }
+    regionCount[key] = (regionCount[key] || 0) + 1;
   });
 
-  return Object.entries(regionCount)
-    .map(([label, count]) => ({
-      label,
-      value: count,
-      percentage: Number(((count / totalCount) * 100).toFixed(2)),
-    }))
-    .sort((a, b) => b.value - a.value);
+  return regionOrder.map((label) => ({
+    label,
+    value: regionCount[label],
+    percentage: Number(((regionCount[label] / totalCount) * 100).toFixed(2)),
+  }));
 };
 
 // 거주지 분포 데이터 계산 (sub_region - 상위 10개)
