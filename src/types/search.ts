@@ -23,10 +23,10 @@ interface QA_Pairs {
   question: string;
 }
 
-interface SearchNlResults {
+export interface SearchNlResults {
   user_id: string;
   score: number;
-  timestamp: string;
+  survey_datetime: string;
   demographic_info: {
     age_group: string;
     gender: string;
@@ -36,7 +36,7 @@ interface SearchNlResults {
     marital_status: string;
     sub_region: string;
   };
-  behavios_info: {
+  behaviors_info: {
     smoker: boolean;
     has_vehicle: boolean;
     drinker: boolean;

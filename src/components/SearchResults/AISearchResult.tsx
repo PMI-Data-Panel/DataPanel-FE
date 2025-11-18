@@ -31,10 +31,6 @@ const AISearchResult = ({
       parts.push(`${mostFrequentValues.region.label}에 거주`);
     }
 
-    if (mostFrequentValues.panelSource) {
-      parts.push(`설문 출처는 주로 ${mostFrequentValues.panelSource.label}`);
-    }
-
     return parts.length > 0
       ? parts.join(", ") + "입니다."
       : "데이터를 분석 중입니다.";

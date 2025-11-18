@@ -36,3 +36,30 @@
   animation: wave 1.4s ease-in-out infinite;
   animation-delay: 0.4s;
 }
+
+/* 로딩 점 애니메이션 */
+@keyframes wave-dot {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.animate-wave-dot1 {
+  animation: wave-dot 1s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-wave-dot2 {
+  animation: wave-dot 1s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+.animate-wave-dot3 {
+  animation: wave-dot 1s ease-in-out infinite;
+  animation-delay: 0.3s;
+}

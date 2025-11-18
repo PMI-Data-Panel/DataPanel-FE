@@ -7,44 +7,84 @@ import AdditionalSearch from "../components/SearchResults/AdditionalSearch";
 import AISearchResult from "../components/SearchResults/AISearchResult";
 import Sidebar from "../components/SearchPage/Sidebar";
 import NullWarning from "../components/SearchResults/NullWarning";
+import PanelListModal from "../components/SearchResults/PanelListModal";
+import type { SearchNlResults } from "../types/search";
+import type { BarData } from "../types/graph";
 import {
   calculateGenderData,
   calculateAgeData,
   calculateRegionData,
   calculateResidenceData,
-  calculatePanelSourceData,
   checkHasNullValues,
 } from "../utils/chartDataCalculators";
 import { getAllMostFrequentValues } from "../utils/getMostFrequentValues";
 import BarChart from "../components/common/graph/BarChart";
 import NestedDonutChart from "../components/common/graph/NestedDonutChart";
-import DonutChart from "../components/common/graph/DonutChart";
 
 const SearchResults = () => {
   const { query, searchResults: data } = useSearch();
   const [additionalQuery, setAdditionalQuery] = useState(""); // 추후 가능하다면 추가검색 구현 예정
   const navigate = useNavigate();
 
+  // 패널 목록 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredPanels, setFilteredPanels] = useState<SearchNlResults[]>([]);
+  const [filterInfo, setFilterInfo] = useState({ label: "", type: "" });
+
   // 그래프 데이터 계산
   const genderData = useMemo(() => calculateGenderData(data), [data]);
   const ageData = useMemo(() => calculateAgeData(data), [data]);
   const regionData = useMemo(() => calculateRegionData(data), [data]);
   const residenceData = useMemo(() => calculateResidenceData(data), [data]);
-  const panelSourceData = useMemo(() => calculatePanelSourceData(data), [data]);
   const hasNullValues = useMemo(() => checkHasNullValues(data), [data]);
 
   // 최빈값 계산
   const mostFrequentValues = useMemo(
     () =>
-      getAllMostFrequentValues(
-        genderData,
-        ageData,
-        regionData,
-        residenceData,
-        panelSourceData
-      ),
-    [genderData, ageData, regionData, residenceData, panelSourceData]
+      getAllMostFrequentValues(genderData, ageData, regionData, residenceData),
+    [genderData, ageData, regionData, residenceData]
   );
+
+  // 그래프 클릭 시 해당 항목 필터링
+  const handleGenderClick = (clickedData: BarData) => {
+    if (!data?.results) return;
+    const filtered = data.results.filter(
+      (panel) => panel.demographic_info.gender === clickedData.label
+    );
+    setFilteredPanels(filtered);
+    setFilterInfo({ label: clickedData.label, type: "성별 분포" });
+    setIsModalOpen(true);
+  };
+
+  const handleAgeClick = (clickedData: BarData) => {
+    if (!data?.results) return;
+    const filtered = data.results.filter(
+      (panel) => panel.demographic_info.age_group === clickedData.label
+    );
+    setFilteredPanels(filtered);
+    setFilterInfo({ label: clickedData.label, type: "연령대 분포" });
+    setIsModalOpen(true);
+  };
+
+  const handleRegionClick = (clickedData: BarData) => {
+    if (!data?.results) return;
+    const filtered = data.results.filter(
+      (panel) => panel.demographic_info.region === clickedData.label
+    );
+    setFilteredPanels(filtered);
+    setFilterInfo({ label: clickedData.label, type: "지역 분포" });
+    setIsModalOpen(true);
+  };
+
+  const handleResidenceClick = (clickedData: BarData) => {
+    if (!data?.results) return;
+    const filtered = data.results.filter(
+      (panel) => panel.demographic_info.sub_region === clickedData.label
+    );
+    setFilteredPanels(filtered);
+    setFilterInfo({ label: clickedData.label, type: "거주지 분포" });
+    setIsModalOpen(true);
+  };
 
   if (!data) {
     return <NotFoundPage />;
@@ -98,34 +138,48 @@ const SearchResults = () => {
             <div className="grid grid-cols-2 gap-6">
               {/* 성별 분포 */}
               {genderData.length > 0 && (
-                <BarChart chartData={genderData} title="성별 분포" />
+                <BarChart
+                  chartData={genderData}
+                  title="성별 분포"
+                  onBarClick={handleGenderClick}
+                />
               )}
 
               {/* 연령대 분포 */}
               {ageData.length > 0 && (
-                <BarChart chartData={ageData} title="연령대 분포" />
+                <BarChart
+                  chartData={ageData}
+                  title="연령대 분포"
+                  onBarClick={handleAgeClick}
+                />
               )}
             </div>
 
             {/* 도넛 차트 섹션 */}
             <div className="grid grid-cols-2 gap-6 mt-6">
-              {/* 지역 분포 (이중 도넛차트) */}
+              {/* 지역 분포 (이중 도넛 차트) */}
               {regionData.length > 0 && residenceData.length > 0 && (
                 <NestedDonutChart
                   innerData={regionData}
                   outerData={residenceData}
                   title="거주지 분포"
+                  onInnerClick={handleRegionClick}
+                  onOuterClick={handleResidenceClick}
                 />
-              )}
-
-              {/* 설문지 출처 (일반 도넛차트) */}
-              {panelSourceData.length > 0 && (
-                <DonutChart chartData={panelSourceData} title="설문지 출처" />
               )}
             </div>
           </div>
         )}
       </div>
+
+      {/* 패널 목록 모달 */}
+      <PanelListModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        panels={filteredPanels}
+        filterLabel={filterInfo.label}
+        filterType={filterInfo.type}
+      />
     </div>
   );
 };

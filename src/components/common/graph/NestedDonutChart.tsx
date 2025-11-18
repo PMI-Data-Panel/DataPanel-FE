@@ -5,10 +5,14 @@ const NestedDonutChart = ({
   innerData,
   outerData,
   title,
+  onInnerClick,
+  onOuterClick,
 }: {
   innerData: BarData[];
   outerData: BarData[];
   title: string;
+  onInnerClick?: (data: BarData) => void;
+  onOuterClick?: (data: BarData) => void;
 }) => {
   // 툴팁
   const CustomTooltip = ({
@@ -56,6 +60,8 @@ const NestedDonutChart = ({
             nameKey="label"
             label={renderLabel}
             labelLine={false}
+            onClick={(data) => onInnerClick?.(data)}
+            cursor="pointer"
           >
             {innerData.map((entry, index) => (
               <Cell key={`inner-${index}`} fill={entry.color} />
@@ -73,6 +79,8 @@ const NestedDonutChart = ({
             nameKey="label"
             label={renderLabel}
             labelLine={false}
+            onClick={(data) => onOuterClick?.(data)}
+            cursor="pointer"
           >
             {outerData.map((entry, index) => (
               <Cell key={`outer-${index}`} fill={entry.color} />
