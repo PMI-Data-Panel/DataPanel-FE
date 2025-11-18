@@ -6,16 +6,16 @@ interface PieChartComponentProps {
   data: Distribution[];
   title?: string;
   isAnimationActive?: boolean;
+  colors?: string[];
 }
 
 const RADIAN = Math.PI / 180;
 
-// 색상 팔레트 (5가지)
-const COLORS = [
+// 기본 색상 팔레트
+const DEFAULT_COLORS = [
   "#6FA3E3", // blue
   "#745AE6", // purple
   "#E55D59", // red
-
   "#10b981", // green-500
   "#f59e0b", // amber-500
   "#8b5cf6", // violet-500
@@ -62,9 +62,11 @@ const PieChartComponent = ({
   data,
   title,
   isAnimationActive = true,
+  colors,
 }: PieChartComponentProps) => {
+  const palette = colors && colors.length > 0 ? colors : DEFAULT_COLORS;
   return (
-    <div className="bg-blue-50 shadow-xl rounded-lg p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full">
+    <div className="bg-gray-150 shadow-xl rounded-lg p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full">
       {title && (
         <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">
           {title}
@@ -84,7 +86,7 @@ const PieChartComponent = ({
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${entry.label}`}
-                fill={COLORS[index % COLORS.length]}
+                fill={palette[index % palette.length]}
               />
             ))}
           </Pie>

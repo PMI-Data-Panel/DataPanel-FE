@@ -28,32 +28,34 @@ const Navbar = () => {
     <div className="flex items-center px-3 md:px-6 py-2.5 bg-black text-white w-full max-w-full overflow-x-hidden">
       {/* 로고 - 왼쪽 고정 */}
       <strong
-        className="cursor-pointer flex-shrink-0 mr-3 md:mr-0"
+        className="cursor-pointer flex-shrink-0 mr-3 md:mr-6 lg:mr-10"
         onClick={() => navigate("/")}
       >
         <PawPrint size={20} className="md:w-6 md:h-6" />
       </strong>
 
-      {/* 메뉴 - 모바일에서 균등 분배, 데스크탑에서 오른쪽 정렬 */}
-      <div className="flex flex-1 justify-around md:justify-end md:space-x-8 lg:space-x-15 font-bold text-sm md:text-base">
-        <span
-          className="cursor-pointer"
-          onClick={() => scrollToSection("about")}
-        >
-          About
-        </span>
-        <span
-          className="cursor-pointer"
-          onClick={() => scrollToSection("team")}
-        >
-          Team
-        </span>
-        <span className="cursor-pointer" onClick={() => navigate("/data")}>
-          Data
-        </span>
-        <span className="cursor-pointer" onClick={() => navigate("/search")}>
-          Search
-        </span>
+      {/* 메뉴 - 80% 가로폭에 균등 분배 */}
+      <div className="flex flex-1 justify-center">
+        <div className="flex w-[60%] lg:w-[40%] xl:w-[30%] max-w-3xl justify-between items-center font-bold text-sm md:text-base">
+          <span
+            className="cursor-pointer"
+            onClick={() => scrollToSection("about")}
+          >
+            About
+          </span>
+          <span
+            className="cursor-pointer"
+            onClick={() => scrollToSection("team")}
+          >
+            Team
+          </span>
+          <span className="cursor-pointer" onClick={() => navigate("/data")}>
+            Data
+          </span>
+          <span className="cursor-pointer" onClick={() => navigate("/search")}>
+            Search
+          </span>
+        </div>
       </div>
     </div>
   );

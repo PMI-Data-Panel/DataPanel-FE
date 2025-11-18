@@ -30,6 +30,59 @@ const BarChart = ({
   title: string;
   onBarClick?: (data: Distribution) => void;
 }) => {
+  // 데이터 정렬 함수
+  const sortData = (data?: Distribution[]) => {
+    if (!data) return [];
+
+    return [...data].sort((a, b) => {
+      const aLabel = a.label;
+      const bLabel = b.label;
+
+      // 연령대 정렬 (0대, 10대, 20대, ..., 100대)
+      if (aLabel.includes("대") && bLabel.includes("대")) {
+        const aAge = parseInt(aLabel);
+        const bAge = parseInt(bLabel);
+        return aAge - bAge;
+      }
+
+      // 가족수 정렬 (1명, 2명, ..., 5명)
+      if (aLabel.includes("명") && bLabel.includes("명")) {
+        const aNum = parseInt(aLabel);
+        const bNum = parseInt(bLabel);
+        return aNum - bNum;
+      }
+
+      // 기본 정렬
+      return 0;
+    });
+  };
+
+  const sortedData = sortData(data);
+
+  // X축 도메인 계산 (최소값과 최대값 기반)
+  const getXDomain = (): [number, number] => {
+    if (!sortedData || sortedData.length === 0) return [0, 100];
+
+    const percentages = sortedData.map(d => d.percentage);
+    const minPercentage = Math.min(...percentages);
+    const maxPercentage = Math.max(...percentages);
+
+    // 최소값에서 여유를 두고 시작 (더 차이가 잘 보이도록)
+    const range = maxPercentage - minPercentage;
+
+    // range가 0이면 (모든 값이 같거나 하나의 항목만 있을 때) 고정 범위 사용
+    if (range === 0) {
+      return [0, 100];
+    }
+
+    const padding = range * 0.1; // 10% 패딩
+
+    const domainMin = Math.max(0, Math.floor(minPercentage - padding));
+    const domainMax = Math.ceil(maxPercentage + padding);
+
+    return [domainMin, domainMax];
+  };
+
   // 툴팁
   const CustomTooltip = ({
     active,
@@ -52,18 +105,18 @@ const BarChart = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-3 md:p-6 w-full max-w-full overflow-hidden">
+    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 w-full max-w-full overflow-hidden">
       <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-6 text-center">
         {title}
       </h3>
       <ResponsiveContainer width="100%" height={300}>
         <RechartsBarChart
-          data={data}
+          data={sortedData}
           layout="vertical"
           margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
+          <XAxis type="number" domain={getXDomain()} tick={{ fontSize: 12 }} />
           <YAxis
             dataKey="label"
             type="category"
@@ -84,7 +137,7 @@ const BarChart = ({
               }
             }}
           >
-            {data?.map((_, index) => (
+            {sortedData?.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}

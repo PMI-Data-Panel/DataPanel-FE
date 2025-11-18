@@ -27,7 +27,7 @@ const AreaChartComponent = ({
   areaType = "monotone",
 }: AreaChartComponentProps) => {
   return (
-    <div className="bg-blue-50 rounded-lg shadow-sm p-3 md:p-6 w-full max-w-full overflow-hidden">
+    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 w-full max-w-full overflow-hidden">
       {title && (
         <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">
           {title}

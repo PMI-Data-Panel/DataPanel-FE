@@ -17,19 +17,35 @@ const DataPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 px-3 md:px-5 py-5">
         {data?.gender_distribution ? (
-          <PieChart data={data.gender_distribution} title="성별" />
+          <PieChart
+            data={data.gender_distribution}
+            title="성별"
+            colors={["#6293F0", "#E55D59", "#EED4CD"]}
+          />
         ) : null}
         {data?.drinker_distribution ? (
-          <PieChart data={data.drinker_distribution} title="음주" />
+          <PieChart
+            data={data.drinker_distribution}
+            title="음주"
+            colors={["#6FBCE3", "#C0AFE0"]}
+          />
         ) : null}
         {data?.smoker_distribution ? (
-          <PieChart data={data.smoker_distribution} title="흡연" />
+          <PieChart
+            data={data.smoker_distribution}
+            title="흡연"
+            colors={["#E09BA4", "#E0D55E"]}
+          />
         ) : null}
         {data?.vehicle_distribution ? (
           <PieChart data={data.vehicle_distribution} title="차량 보유" />
         ) : null}
         {data?.marital_status_distribution ? (
-          <PieChart data={data.marital_status_distribution} title="결혼" />
+          <PieChart
+            data={data.marital_status_distribution}
+            title="결혼"
+            colors={["#E3936F", "#E6D2B0", "#A3E36F"]}
+          />
         ) : null}
         {data?.age_distribution ? (
           <BarChart data={data.age_distribution} title="연령대" />
