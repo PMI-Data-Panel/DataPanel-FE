@@ -8,8 +8,7 @@ import AISearchResult from "../components/SearchResults/AISearchResult";
 import Sidebar from "../components/SearchPage/Sidebar";
 import NullWarning from "../components/SearchResults/NullWarning";
 import PanelListModal from "../components/SearchResults/PanelListModal";
-import type { SearchNlResults } from "../types/search";
-import type { BarData } from "../types/graph";
+import type { SearchNlResults, Distribution } from "../types/search";
 import {
   calculateGenderData,
   calculateAgeData,
@@ -38,43 +37,43 @@ const SearchResults = () => {
   const hasNullValues = useMemo(() => checkHasNullValues(data), [data]);
 
   // 그래프 클릭 시 해당 항목 필터링
-  const handleGenderClick = (clickedData: BarData) => {
+  const handleGenderClick = (clickedData: Distribution) => {
     if (!data?.results) return;
     const filtered = data.results.filter(
       (panel) => panel.demographic_info.gender === clickedData.label
     );
     setFilteredPanels(filtered);
-    setFilterInfo({ label: clickedData.label, type: "성별 분포" });
+    setFilterInfo({ label: String(clickedData.label), type: "성별 분포" });
     setIsModalOpen(true);
   };
 
-  const handleAgeClick = (clickedData: BarData) => {
+  const handleAgeClick = (clickedData: Distribution) => {
     if (!data?.results) return;
     const filtered = data.results.filter(
       (panel) => panel.demographic_info.age_group === clickedData.label
     );
     setFilteredPanels(filtered);
-    setFilterInfo({ label: clickedData.label, type: "연령대 분포" });
+    setFilterInfo({ label: String(clickedData.label), type: "연령대 분포" });
     setIsModalOpen(true);
   };
 
-  const handleRegionClick = (clickedData: BarData) => {
+  const handleRegionClick = (clickedData: Distribution) => {
     if (!data?.results) return;
     const filtered = data.results.filter(
       (panel) => panel.demographic_info.region === clickedData.label
     );
     setFilteredPanels(filtered);
-    setFilterInfo({ label: clickedData.label, type: "지역 분포" });
+    setFilterInfo({ label: String(clickedData.label), type: "지역 분포" });
     setIsModalOpen(true);
   };
 
-  const handleResidenceClick = (clickedData: BarData) => {
+  const handleResidenceClick = (clickedData: Distribution) => {
     if (!data?.results) return;
     const filtered = data.results.filter(
       (panel) => panel.demographic_info.sub_region === clickedData.label
     );
     setFilteredPanels(filtered);
-    setFilterInfo({ label: clickedData.label, type: "거주지 분포" });
+    setFilterInfo({ label: String(clickedData.label), type: "거주지 분포" });
     setIsModalOpen(true);
   };
 
@@ -127,7 +126,7 @@ const SearchResults = () => {
               {/* 성별 분포 */}
               {genderData.length > 0 && (
                 <BarChart
-                  chartData={genderData}
+                  data={genderData}
                   title="성별 분포"
                   onBarClick={handleGenderClick}
                 />
@@ -136,7 +135,7 @@ const SearchResults = () => {
               {/* 연령대 분포 */}
               {ageData.length > 0 && (
                 <BarChart
-                  chartData={ageData}
+                  data={ageData}
                   title="연령대 분포"
                   onBarClick={handleAgeClick}
                 />
