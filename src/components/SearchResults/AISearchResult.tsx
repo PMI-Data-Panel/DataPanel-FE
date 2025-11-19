@@ -32,9 +32,7 @@ const AISearchResult = ({ query, data }: AISearchResultProps) => {
           <p className="text-sm md:text-base text-gray-700 leading-relaxed">
             '{query}'라는 검색어로 총{" "}
             <span className="font-semibold">
-              {data.requested_count !== 1000
-                ? data.requested_count
-                : data.results.length}
+              {data.total_hits >= 1000 ? data.total_hits : data.requested_count}
               명
             </span>
             의 관련 패널을 찾았습니다.
