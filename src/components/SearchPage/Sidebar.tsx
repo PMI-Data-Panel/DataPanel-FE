@@ -1,40 +1,51 @@
 import { SidebarClose, SidebarOpen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearch } from "../../hooks/useSearch";
 import SearchHistory from "./SearchHistory";
 
-const Sidebar = () => {
-  const [isHovered, setIsHovered] = useState(false);
+interface SidebarProps {
+  open: boolean;
+}
+
+const Sidebar = ({ open }: SidebarProps) => {
+  const [isSidebarOpen, setIsOpen] = useState(true);
   const { searchHistory } = useSearch();
+
+  useEffect(() => {
+    setIsOpen(open);
+  }, [open]);
 
   return (
     <>
-      {/* 호버 트리거 영역 (좌측 가장자리) - 사이드바가 닫혀있을 때만 */}
-      {!isHovered && (
-        <div
-          className="absolute left-0 top-0 bottom-0 w-12 z-30"
-          onMouseEnter={() => setIsHovered(true)}
-        />
+      {/* 사이드바가 닫혀있을 때 열기 버튼 */}
+      {!isSidebarOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="absolute left-3 top-5 z-30 p-1 hover:bg-gray-100 rounded transition-colors"
+        >
+          <SidebarOpen className="w-6 h-6 text-gray-400" />
+        </button>
       )}
 
       {/* 사이드바 */}
       <div
-        className={`min-h-screen bg-white border-r border-gray-200 shadow-lg transition-all duration-600 ease-in-out ${
-          isHovered ? "w-60" : "w-0"
+        className={`h-screen sticky top-0 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out overflow-hidden ${
+          isSidebarOpen ? "w-60" : "w-0"
         }`}
-        onMouseLeave={() => setIsHovered(false)}
       >
-        {!isHovered && (
-          <SidebarOpen className="bg-gray-50 w-8 text-gray-400 mt-5 ml-3" />
-        )}
-        {isHovered && (
-          <SidebarClose className="bg-white w-8 text-gray-400 mt-5 ml-3" />
+        {isSidebarOpen && (
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-1 hover:bg-gray-100 rounded transition-colors mt-5 ml-3"
+          >
+            <SidebarClose className="w-6 h-6 text-gray-400" />
+          </button>
         )}
 
         <div
           className={`grid grid-rows-2 h-full p-6 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          } transition-opacity duration-600`}
+            isSidebarOpen ? "opacity-100" : "opacity-0"
+          } transition-opacity duration-300`}
         >
           {/* 검색 히스토리 */}
           <div>
@@ -52,16 +63,6 @@ const Sidebar = () => {
                 ))}
               </ul>
             )}
-          </div>
-
-          {/* 저장된 그룹 */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 whitespace-nowrap">
-              저장된 그룹
-            </h3>
-            <p className="text-sm text-gray-500 whitespace-nowrap">
-              저장된 그룹이 없습니다.
-            </p>
           </div>
         </div>
       </div>

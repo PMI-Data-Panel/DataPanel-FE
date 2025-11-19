@@ -29,7 +29,7 @@ const SearchForm = ({
   // 이미 키워드가 있다면 (히스토리로 넘어온 경우) 검색바에 query 입력해두기
   useEffect(() => {
     setSearchQuery(searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, setSearchQuery]);
 
   return (
     <form onSubmit={handleSubmit} className="w-2/3 mx-auto">
@@ -40,7 +40,7 @@ const SearchForm = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="서울에 거주하는 30대 남성 직장인"
+          placeholder="술담배 좋아하는 30대"
           disabled={isSearching}
         />
         <button
