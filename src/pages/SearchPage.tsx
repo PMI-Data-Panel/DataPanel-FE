@@ -48,7 +48,7 @@ const SearchPage = () => {
     <div className="flex h-screen bg-gray-50 relative w-full max-w-full overflow-hidden">
       {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar open={true} />
       </div>
 
       {/* 검색중이라면 로딩화면 */}
@@ -75,7 +75,7 @@ const SearchPage = () => {
                 isSearching={isPending}
               />
               <p className="text-xs md:text-sm text-gray-500 mt-3 md:mt-5 text-center px-2">
-                '20대 여성 중 냉장고 보유자'와 같이 입력해 보세요.
+                '서울, 경남에 사는 ott 구독자'와 같이 입력해 보세요.
               </p>
             </div>
 

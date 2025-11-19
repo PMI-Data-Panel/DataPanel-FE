@@ -1,4 +1,4 @@
-import { Treemap } from "recharts";
+import { Treemap, ResponsiveContainer } from "recharts";
 import type { TreemapNode } from "recharts/types/chart/Treemap";
 import type { Distribution } from "../../../types/search";
 
@@ -13,6 +13,7 @@ interface TreeMapComponentProps {
   data: TreeMapData | Distribution[];
   title?: string;
   dataKey?: string;
+  onItemClick?: (item: Distribution) => void;
 }
 
 // Distribution[] 배열을 TreeMap 형식으로 변환
@@ -27,24 +28,37 @@ const convertToTreeMapData = (data: Distribution[]): TreeMapData => {
 };
 
 const COLORS = [
-  "#3b82f6", // blue-500
-  "#10b981", // green-500
-  "#f59e0b", // amber-500
-  "#ef4444", // red-500
-  "#8b5cf6", // violet-500
-  "#06b6d4", // cyan-500
-  "#ec4899", // pink-500
-  "#14b8a6", // teal-500
+  "#E8765D", // 주황
+  "#5DA0E8", // 파랑
+  "#EA7B86", // 분홍
+  "#5DE871", // 초록
+  "#E8CB5D", // 노랑
+  "#E85DB0", // 분홍 2
+  "#905DE8", // 보라
+  "#D6E8C8", // 초록 2
 ];
 
-const CustomizedContent = (props: TreemapNode) => {
-  const { depth, x, y, width, height, index, name, value } = props;
+interface CustomizedContentProps extends TreemapNode {
+  onItemClick?: (item: Distribution) => void;
+}
+
+const CustomizedContent = (props: CustomizedContentProps) => {
+  const { depth, x, y, width, height, index, name, value, onItemClick } = props;
 
   // root depth는 표시하지 않음
   if (depth === 0) return null;
 
+  const handleClick = () => {
+    if (onItemClick && name && value !== undefined) {
+      onItemClick({ label: name, value: value as number, percentage: 0 });
+    }
+  };
+
   return (
-    <g>
+    <g
+      onClick={handleClick}
+      style={{ cursor: onItemClick ? "pointer" : "default" }}
+    >
       <rect
         x={x}
         y={y}
@@ -100,6 +114,7 @@ const TreeMapComponent = ({
   data,
   title,
   dataKey = "size",
+  onItemClick,
 }: TreeMapComponentProps) => {
   // Distribution 타입인지 확인하고 변환
   const isDistribution =
@@ -108,6 +123,11 @@ const TreeMapComponent = ({
     ? convertToTreeMapData(data as Distribution[])
     : (data as TreeMapData);
 
+  // onItemClick을 전달하는 커스텀 콘텐츠 생성
+  const ContentWithClick = (props: TreemapNode) => (
+    <CustomizedContent {...props} onItemClick={onItemClick} />
+  );
+
   return (
     <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full overflow-hidden">
       {title && (
@@ -115,16 +135,16 @@ const TreeMapComponent = ({
           {title}
         </h3>
       )}
-      <div className="w-full h-full flex items-center justify-center">
-        <Treemap
-          width={600}
-          height={400}
-          data={[treeMapData] as unknown as TreeMapData[]}
-          dataKey={dataKey}
-          stroke="#fff"
-          fill="#8884d8"
-          content={CustomizedContent as unknown as React.ReactElement}
-        />
+      <div className="w-full h-[250px] md:h-[300px] lg:h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            data={[treeMapData] as unknown as TreeMapData[]}
+            dataKey={dataKey}
+            stroke="#fff"
+            fill="#8884d8"
+            content={ContentWithClick as unknown as React.ReactElement}
+          />
+        </ResponsiveContainer>
       </div>
     </div>
   );

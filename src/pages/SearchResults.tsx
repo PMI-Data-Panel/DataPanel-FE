@@ -17,7 +17,7 @@ import {
   checkHasNullValues,
 } from "../utils/chartDataCalculators";
 import BarChart from "../components/common/graph/BarChart";
-import NestedDonutChart from "../components/common/graph/NestedDonutChart";
+import TreeMapComponent from "../components/common/graph/TreeMap";
 
 const SearchResults = () => {
   const { query, searchResults: data } = useSearch();
@@ -92,7 +92,7 @@ const SearchResults = () => {
     <div className="min-h-screen bg-gray-50 flex relative w-full max-w-full overflow-x-hidden">
       {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar open={false} />
       </div>
 
       {/* 메인 콘텐츠 영역 */}
@@ -149,16 +149,23 @@ const SearchResults = () => {
               )}
             </div>
 
-            {/* 도넛 차트 섹션 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
-              {/* 지역 분포 (이중 도넛 차트) */}
-              {regionData.length > 0 && residenceData.length > 0 && (
-                <NestedDonutChart
-                  innerData={regionData}
-                  outerData={residenceData}
+            {/* 트리맵 차트 섹션 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* 지역 분포 */}
+              {regionData.length > 0 && (
+                <TreeMapComponent
+                  data={regionData}
+                  title="지역 분포"
+                  onItemClick={handleRegionClick}
+                />
+              )}
+
+              {/* 거주지 분포 */}
+              {residenceData.length > 0 && (
+                <TreeMapComponent
+                  data={residenceData}
                   title="거주지 분포"
-                  onInnerClick={handleRegionClick}
-                  onOuterClick={handleResidenceClick}
+                  onItemClick={handleResidenceClick}
                 />
               )}
             </div>

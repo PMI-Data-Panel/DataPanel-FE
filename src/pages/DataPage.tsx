@@ -2,6 +2,7 @@ import AreaChart from "../components/common/graph/AreaChart";
 import BarChart from "../components/common/graph/BarChart";
 import PieChart from "../components/common/graph/PieChart";
 import TreeMap from "../components/common/graph/TreeMap";
+import { TOTAL_PANEL_COUNT } from "../constants/number";
 import useGetVisualization from "../hooks/queries/useGetVisualization";
 
 const DataPage = () => {
@@ -14,8 +15,11 @@ const DataPage = () => {
       <div className="flex items-center justify-center my-8 md:my-15 px-4 text-2xl md:text-3xl font-bold">
         전체 패널 데이터
       </div>
+      <div className="text-lg font-semibold px-5">
+        전체 응답자 수: {TOTAL_PANEL_COUNT} 명
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 px-3 md:px-5 py-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 px-3 md:px-5 py-5">
         {data?.gender_distribution ? (
           <PieChart
             data={data.gender_distribution}
