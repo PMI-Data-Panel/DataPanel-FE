@@ -7,6 +7,11 @@ import usePostSearch from "../hooks/queries/usePostSearch";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import Loading from "../components/SearchPage/Loading";
+import SearchKeywords from "../components/SearchPage/SearchKeywords";
+
+// 예시 검색 키워드
+const example1 = "서울에 사는 ott 구독자";
+const example2 = "술담배 좋아하는 30대";
 
 const SearchPage = () => {
   const { query, setQuery, addSearchHistory, setSearchResults } = useSearch();
@@ -74,9 +79,18 @@ const SearchPage = () => {
                 onSearch={handleSearch}
                 isSearching={isPending}
               />
-              <p className="text-xs md:text-sm text-gray-500 mt-3 md:mt-5 text-center px-2">
-                '서울, 경남에 사는 ott 구독자'와 같이 입력해 보세요.
-              </p>
+            </div>
+
+            {/* 예시 검색 키워드 */}
+            <div className="mt-3 flex justify-center gap-3">
+              <SearchKeywords
+                placeholder={example1}
+                setKeyword={() => setQuery(example1)}
+              />
+              <SearchKeywords
+                placeholder={example2}
+                setKeyword={() => setQuery(example2)}
+              />
             </div>
 
             {/* 모바일 사이드바 (검색 히스토리) */}

@@ -40,7 +40,7 @@ const SearchForm = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="술담배 좋아하는 30대"
+          placeholder="검색어를 입력하세요"
           disabled={isSearching}
         />
         <button
