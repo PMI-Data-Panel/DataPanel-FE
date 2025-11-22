@@ -11,11 +11,11 @@ const AdditionalSearch = ({
 }: AdditionalSearchProps) => {
   return (
     <>
-      <div className="bg-gray-50 rounded-lg p-3 md:p-6 border border-gray-200">
-        <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
+      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6">
+        <h3 className="text-lg md:text-xl font-bold text-[#191f28] mb-4 md:mb-5">
           이 패널들 중에서 추가 검색
         </h3>
-        <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full">
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
           <input
             type="text"
             value={additionalQuery}
@@ -26,11 +26,11 @@ const AdditionalSearch = ({
               }
             }}
             placeholder="예: '이 사람들 중 아이폰 사용자는?'"
-            className="flex-1 px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
+            className="flex-1 px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3182f6] focus:border-[#3182f6] text-sm md:text-base bg-white transition-all duration-200"
           />
           <button
             onClick={handleAdditionalSearch}
-            className="w-full sm:w-auto px-3 md:px-6 py-2 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap text-sm md:text-base"
+            className="w-full sm:w-auto px-6 py-3 bg-[#3182f6] text-white rounded-2xl hover:bg-[#1b64da] transition-all duration-200 font-semibold whitespace-nowrap text-sm md:text-base shadow-sm hover:shadow-md active:scale-[0.98]"
           >
             추가 분석
           </button>

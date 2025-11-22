@@ -40,5 +40,11 @@ export const getUserDetail = async (
   console.log("📤 사용자 상세 정보 요청:", userId);
   const { data } = await axiosInstance.get(`/search/opensearch/${userId}`);
   console.log("📥 사용자 상세 정보 응답 받음");
+  console.log("📥 전체 응답 데이터:", JSON.stringify(data, null, 2));
+  if (data?.hits?.hits?.[0]?._source) {
+    console.log("📥 사용자 소스 데이터:", JSON.stringify(data.hits.hits[0]._source, null, 2));
+    console.log("📥 사용자 메타데이터:", JSON.stringify(data.hits.hits[0]._source.metadata, null, 2));
+    console.log("📥 사용자 QA 페어 개수:", data.hits.hits[0]._source.qa_pairs?.length || 0);
+  }
   return data;
 };

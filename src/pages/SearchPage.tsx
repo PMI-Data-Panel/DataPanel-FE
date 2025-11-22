@@ -49,12 +49,12 @@ const SearchPage = () => {
     // 검색 내역에 추가
     addSearchHistory(searchQuery);
 
-    // API 호출 (첫 페이지, 페이지 크기 20)
+    // API 호출 (첫 페이지, 페이지 크기 30000 - 전체 데이터를 받아옴)
     const requestBody = { 
       query: searchQuery, 
       use_vector_search: true, 
       page: 1,
-      page_size: 20
+      page_size: 30000
     };
     console.log("🔴 SearchPage - 요청 Body:", JSON.stringify(requestBody, null, 2));
     console.log("🔴 SearchPage - page_size 값:", requestBody.page_size);

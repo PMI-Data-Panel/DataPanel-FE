@@ -71,15 +71,42 @@ export interface ResponseVisualization {
 
 // (GET) /search/opensearch/{user_id} - response
 export interface ResponseUserDetailDto {
-  took: number;
-  timed_out: boolean;
-  _shards: {
+  user_id?: string;
+  found?: boolean;
+  total?: number;
+  took?: number;
+  timed_out?: boolean;
+  _shards?: {
     total: number;
     successful: number;
     skipped: number;
     failed: number;
   };
-  hits: {
+  // 실제 응답 구조: hits는 배열일 수도 있고, 중첩 객체일 수도 있음
+  hits: Array<{
+    _index?: string;
+    _id: string;
+    _score: number;
+    _source: {
+      user_id: string;
+      timestamp?: string;
+      metadata: {
+        panel?: string;
+        gender?: string;
+        birth_year?: number | string;
+        age?: number;
+        age_group?: string;
+        region?: string;
+        sub_region?: string;
+        survey_datetime?: string;
+        birth_date?: string;
+      };
+      qa_pairs: Array<{
+        q_text: string;
+        answer: string | string[];
+      }>;
+    };
+  }> | {
     total: {
       value: number;
       relation: string;
@@ -95,7 +122,7 @@ export interface ResponseUserDetailDto {
         metadata: {
           panel?: string;
           gender?: string;
-          birth_year?: string;
+          birth_year?: number | string;
           age?: number;
           age_group?: string;
           region?: string;

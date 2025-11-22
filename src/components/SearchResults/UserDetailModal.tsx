@@ -16,13 +16,62 @@ const UserDetailModal = ({
   isLoading,
   userId,
 }: UserDetailModalProps) => {
-  if (!isOpen) return null;
+  console.log("🟢 UserDetailModal 렌더링:", { isOpen, isLoading, hasUserDetail: !!userDetail, userId });
+  
+  if (!isOpen) {
+    console.log("🟢 모달이 닫혀있음");
+    return null;
+  }
 
-  const source = userDetail?.hits?.hits?.[0]?._source;
+  // 실제 응답 구조에 맞게 수정: hits는 배열일 수도 있고 중첩 객체일 수도 있음
+  type SourceType = {
+    user_id: string;
+    timestamp?: string;
+    metadata?: {
+      panel?: string;
+      gender?: string;
+      birth_year?: number | string;
+      age?: number;
+      age_group?: string;
+      region?: string;
+      sub_region?: string;
+    };
+    qa_pairs?: Array<{
+      q_text: string;
+      answer: string | string[];
+    }>;
+  };
+  
+  const getSource = (): SourceType | undefined => {
+    if (!userDetail?.hits) return undefined;
+    if (Array.isArray(userDetail.hits)) {
+      return userDetail.hits[0]?._source as SourceType | undefined;
+    }
+    if (typeof userDetail.hits === 'object' && 'hits' in userDetail.hits) {
+      return (userDetail.hits as { hits: Array<{ _source: SourceType }> }).hits[0]?._source;
+    }
+    return undefined;
+  };
+  
+  const source = getSource();
+  console.log("🟢 모달 소스 데이터:", source);
+  console.log("🟢 userDetail 구조:", userDetail);
+  console.log("🟢 hits 타입:", Array.isArray(userDetail?.hits) ? "배열" : "객체");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col relative z-[10000]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -149,7 +198,7 @@ const UserDetailModal = ({
                     질문-답변 ({source.qa_pairs.length}개)
                   </h3>
                   <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {source.qa_pairs.map((qa, index) => (
+                    {source.qa_pairs.map((qa: { q_text: string; answer: string | string[] }, index: number) => (
                       <div
                         key={index}
                         className="bg-gray-50 rounded-lg p-4 border border-gray-200"
@@ -162,7 +211,7 @@ const UserDetailModal = ({
                           {Array.isArray(qa.answer) ? (
                             <div className="mt-1">
                               <ul className="list-disc list-inside space-y-1">
-                                {qa.answer.map((item, idx) => (
+                                {qa.answer.map((item: string, idx: number) => (
                                   <li key={idx}>{item}</li>
                                 ))}
                               </ul>
@@ -178,7 +227,7 @@ const UserDetailModal = ({
               )}
 
               {/* 검색 정보 */}
-              {userDetail.hits && (
+              {userDetail && (
                 <div className="bg-gray-50 rounded-lg p-4 text-sm">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     검색 정보
@@ -187,25 +236,37 @@ const UserDetailModal = ({
                     <div>
                       <span className="text-gray-500">매칭 점수:</span>
                       <span className="ml-2 font-medium text-gray-900">
-                        {userDetail.hits.hits[0]?._score?.toFixed(2) || "-"}
+                        {Array.isArray(userDetail.hits) 
+                          ? userDetail.hits[0]?._score?.toFixed(2) || "-"
+                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
+                          ? (userDetail.hits as { hits: Array<{ _score?: number }> }).hits[0]?._score?.toFixed(2) || "-"
+                          : "-"}
                       </span>
                     </div>
                     <div>
                       <span className="text-gray-500">소요 시간:</span>
                       <span className="ml-2 font-medium text-gray-900">
-                        {userDetail.took}ms
+                        {userDetail.took || "-"}ms
                       </span>
                     </div>
                     <div>
                       <span className="text-gray-500">인덱스:</span>
                       <span className="ml-2 font-medium text-gray-900">
-                        {userDetail.hits.hits[0]?._index || "-"}
+                        {Array.isArray(userDetail.hits)
+                          ? userDetail.hits[0]?._index || "-"
+                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
+                          ? (userDetail.hits as { hits: Array<{ _index?: string }> }).hits[0]?._index || "-"
+                          : "-"}
                       </span>
                     </div>
                     <div>
                       <span className="text-gray-500">문서 ID:</span>
                       <span className="ml-2 font-medium text-gray-900">
-                        {userDetail.hits.hits[0]?._id || "-"}
+                        {Array.isArray(userDetail.hits)
+                          ? userDetail.hits[0]?._id || "-"
+                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
+                          ? (userDetail.hits as { hits: Array<{ _id?: string }> }).hits[0]?._id || "-"
+                          : "-"}
                       </span>
                     </div>
                   </div>
