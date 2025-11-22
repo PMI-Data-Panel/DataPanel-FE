@@ -11,7 +11,7 @@ export const calculateGenderData = (
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
-    const gender = result.demographic_info.gender;
+    const gender = result.demographic_info?.gender;
     const key = gender === null || gender === undefined || gender === ""
       ? "알 수 없음"
       : gender;
@@ -39,7 +39,7 @@ export const calculateAgeData = (
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
-    const ageGroup = result.demographic_info.age_group;
+    const ageGroup = result.demographic_info?.age_group;
     if (ageGroup === null || ageGroup === undefined || ageGroup === "") {
       ageCount["알 수 없음"] = (ageCount["알 수 없음"] || 0) + 1;
     } else {
@@ -85,7 +85,7 @@ export const calculateRegionData = (
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
-    const region = result.demographic_info.region;
+    const region = result.demographic_info?.region;
     const key = region === null || region === undefined || region === ""
       ? "알 수 없음"
       : region;
@@ -113,7 +113,7 @@ export const calculateResidenceData = (
   const totalCount = data.results.length;
 
   data.results.forEach((result) => {
-    const subRegion = result.demographic_info.sub_region;
+    const subRegion = result.demographic_info?.sub_region;
     if (subRegion === null || subRegion === undefined || subRegion === "") {
       residenceCount["알 수 없음"] = (residenceCount["알 수 없음"] || 0) + 1;
     } else {
@@ -138,6 +138,7 @@ export const checkHasNullValues = (
   if (!data?.results || data.results.length === 0) return false;
   return data.results.some(
     (result) =>
+      !result.demographic_info ||
       result.demographic_info.gender === null ||
       result.demographic_info.gender === "" ||
       result.demographic_info.age_group === null ||

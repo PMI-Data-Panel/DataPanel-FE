@@ -5,4 +5,5 @@ export const LOCAL_STORAGE_KEY = {
 
 export const QUERY_KEY = {
   allData: "data_panel_all_data",
+  userDetail: "data_panel_user_detail",
 };

@@ -2,6 +2,7 @@ import type {
   RequestSearchNlDto,
   ResponseSearchNlDto,
   ResponseVisualization,
+  ResponseUserDetailDto,
 } from "../types/search";
 import { axiosInstance } from "./axios";
 
@@ -9,7 +10,18 @@ import { axiosInstance } from "./axios";
 export const postSearchNl = async (
   body: RequestSearchNlDto
 ): Promise<ResponseSearchNlDto> => {
+  console.log("📤 API 요청 Body:", JSON.stringify(body, null, 2));
+  console.log("📤 page_size 값:", body.page_size);
+  console.log("📤 page_size 타입:", typeof body.page_size);
+  console.log("📤 전체 body 객체:", body);
+  
   const { data } = await axiosInstance.post("/search/nl", body);
+  
+  console.log("📥 API 응답 받음");
+  console.log("📥 응답 page_size:", data.page_size);
+  console.log("📥 응답 results 개수:", data.results?.length);
+  console.log("📥 전체 응답:", data);
+  
   return data;
 };
 
@@ -18,5 +30,15 @@ export const getVisualization = async (): Promise<ResponseVisualization> => {
   const { data } = await axiosInstance.get(
     "/visualization/user-info/survey_responses_merged"
   );
+  return data;
+};
+
+// (GET) /search/opensearch/{user_id}
+export const getUserDetail = async (
+  userId: string
+): Promise<ResponseUserDetailDto> => {
+  console.log("📤 사용자 상세 정보 요청:", userId);
+  const { data } = await axiosInstance.get(`/search/opensearch/${userId}`);
+  console.log("📥 사용자 상세 정보 응답 받음");
   return data;
 };
