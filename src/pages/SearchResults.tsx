@@ -98,7 +98,10 @@ const SearchResults = () => {
     setCurrentPage(newPage);
     // 검색 결과 리스트로 스크롤
     setTimeout(() => {
-      resultsListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultsListRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 100);
   };
 
@@ -121,14 +124,14 @@ const SearchResults = () => {
     if (data) {
       // 새로운 검색 결과인지 확인 (이전 데이터와 다른 경우)
       const isNewSearch = prevDataRef.current !== data;
-      
+
       if (isNewSearch) {
         // 새로운 검색 결과인 경우 최상단으로 스크롤
         setCurrentPage(1);
         isInitialLoadRef.current = true;
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-      
+
       prevDataRef.current = data;
     }
   }, [data]);
@@ -138,7 +141,10 @@ const SearchResults = () => {
     // 처음 로드가 아니고, 페이지가 변경된 경우에만 스크롤
     if (!isInitialLoadRef.current && currentPage > 1) {
       setTimeout(() => {
-        resultsListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        resultsListRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }, 100);
     } else if (isInitialLoadRef.current && data) {
       // 처음 로드 시 플래그를 false로 변경
@@ -206,34 +212,28 @@ const SearchResults = () => {
             {/* 막대그래프 섹션 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* 성별 분포 */}
-              {genderData.length > 0 && (
-                <BarChart
-                  data={genderData}
-                  title="성별 분포"
-                  onBarClick={handleGenderClick}
-                />
-              )}
+              <BarChart
+                data={genderData}
+                title="성별 분포"
+                onBarClick={handleGenderClick}
+              />
 
               {/* 연령대 분포 */}
-              {ageData.length > 0 && (
-                <BarChart
-                  data={ageData}
-                  title="연령대 분포"
-                  onBarClick={handleAgeClick}
-                />
-              )}
+              <BarChart
+                data={ageData}
+                title="연령대 분포"
+                onBarClick={handleAgeClick}
+              />
             </div>
 
             {/* 트리맵 차트 섹션 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* 지역 분포 */}
-              {regionData.length > 0 && (
-                <TreeMapComponent
-                  data={regionData}
-                  title="지역 분포"
-                  onItemClick={handleRegionClick}
-                />
-              )}
+              <TreeMapComponent
+                data={regionData}
+                title="지역 분포"
+                onItemClick={handleRegionClick}
+              />
 
               {/* 거주지 분포 */}
               {residenceData.length > 0 && (
@@ -247,7 +247,7 @@ const SearchResults = () => {
 
             {/* 검색 결과 리스트 */}
             <div ref={resultsListRef}>
-              <SearchResultsList 
+              <SearchResultsList
                 data={{
                   ...data,
                   results: displayedResults,

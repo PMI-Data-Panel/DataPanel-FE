@@ -1,3 +1,5 @@
+//import usePostSearchRefine from "../../hooks/queries/usePostSearchRefine";
+
 interface AdditionalSearchProps {
   additionalQuery: string;
   setAdditionalQuery: (query: string) => void;
@@ -9,6 +11,8 @@ const AdditionalSearch = ({
   setAdditionalQuery,
   handleAdditionalSearch,
 }: AdditionalSearchProps) => {
+  //const { data, isPending } = usePostSearchRefine();
+
   return (
     <>
       <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6">

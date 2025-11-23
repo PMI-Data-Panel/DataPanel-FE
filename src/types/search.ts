@@ -13,6 +13,7 @@ export interface ResponseSearchNlDto {
   total_hits: number;
   max_score: number;
   results: SearchNlResults[];
+  session_id: string;
   took_ms: number;
   page: number;
   page_size: number;
@@ -207,3 +208,23 @@ type Income = Distribution<IncomeLabel>;
 type Vehicle = Distribution<VehicleLabel>;
 type Smoker = Distribution<SmokerLabel>;
 type Drinker = Distribution<DrinkerLabel>;
+
+// (POST) /search/refine/query - request
+export interface RequestSearchRefineDto {
+  session_id: string;
+  query: string;
+  max_user_ids: 10; // 고정값
+  llm_instructions: "string"; // 고정값
+}
+
+// (POST) /search/refine/query - response
+export interface ResponseSearchRefineDto {
+  session_id: string;
+  llm_analysis: {
+    model: string;
+    generated_at: string;
+    analysis: string;
+    user_count: number;
+  };
+  took_ms: number;
+}
