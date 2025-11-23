@@ -29,11 +29,11 @@ const PanelListModal = ({
     ];
     const rows = panels.map((panel) => [
       panel.user_id,
-      panel.demographic_info.age_group || "-",
-      panel.demographic_info.birth_year || "-",
-      panel.demographic_info.marital_status || "-",
-      `${panel.demographic_info.region || "-"} ${
-        panel.demographic_info.sub_region || ""
+      panel.demographic_info?.age_group || "-",
+      panel.demographic_info?.birth_year || "-",
+      panel.demographic_info?.marital_status || "-",
+      `${panel.demographic_info?.region || "-"} ${
+        panel.demographic_info?.sub_region || ""
       }`.trim(),
       panel.survey_datetime || "-",
     ]);
@@ -127,17 +127,17 @@ const PanelListModal = ({
                       {panel.user_id}
                     </td>
                     <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700 border-b">
-                      {panel.demographic_info.age_group || "-"}
+                      {panel.demographic_info?.age_group || "-"}
                     </td>
                     <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700 border-b">
-                      {panel.demographic_info.birth_year || "-"}
+                      {panel.demographic_info?.birth_year || "-"}
                     </td>
                     <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700 border-b">
-                      {panel.demographic_info.marital_status || "-"}
+                      {panel.demographic_info?.marital_status || "-"}
                     </td>
                     <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700 border-b">
-                      {panel.demographic_info.region || "-"}{" "}
-                      {panel.demographic_info.sub_region || ""}
+                      {panel.demographic_info?.region || "-"}{" "}
+                      {panel.demographic_info?.sub_region || ""}
                     </td>
                     <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700 border-b">
                       {panel.survey_datetime

@@ -3,6 +3,7 @@ export interface RequestSearchNlDto {
   query: string;
   use_vector_search: boolean;
   page: number;
+  page_size: number;
 }
 
 // (POST) /search/nl - response
@@ -19,17 +20,12 @@ export interface ResponseSearchNlDto {
   llm_summary: LLMSummary;
 }
 
-interface QA_Pairs {
-  answer: string;
-  question: string;
-}
-
 export interface SearchNlResults {
   user_id: string;
   score: number;
   timestamp: string;
-  survey_datetime: string;
-  demographic_info: {
+  survey_datetime?: string;
+  demographic_info?: {
     age_group: string;
     gender: string;
     birth_year: string;
@@ -38,14 +34,11 @@ export interface SearchNlResults {
     marital_status: string;
     sub_region: string;
   };
-  behaviors_info: {
+  behaviors_info?: {
     smoker: boolean;
     has_vehicle: boolean;
     drinker: boolean;
   };
-  qa_pairs: QA_Pairs[];
-  matched_qa_pairs: string[];
-  highlights: boolean;
 }
 
 interface LLMSummary {
@@ -74,6 +67,74 @@ export interface ResponseVisualization {
   vehicle_distribution: Vehicle[];
   smoker_distribution: Smoker[];
   drinker_distribution: Drinker[];
+}
+
+// (GET) /search/opensearch/{user_id} - response
+export interface ResponseUserDetailDto {
+  user_id?: string;
+  found?: boolean;
+  total?: number;
+  took?: number;
+  timed_out?: boolean;
+  _shards?: {
+    total: number;
+    successful: number;
+    skipped: number;
+    failed: number;
+  };
+  // 실제 응답 구조: hits는 배열일 수도 있고, 중첩 객체일 수도 있음
+  hits: Array<{
+    _index?: string;
+    _id: string;
+    _score: number;
+    _source: {
+      user_id: string;
+      timestamp?: string;
+      metadata: {
+        panel?: string;
+        gender?: string;
+        birth_year?: number | string;
+        age?: number;
+        age_group?: string;
+        region?: string;
+        sub_region?: string;
+        survey_datetime?: string;
+        birth_date?: string;
+      };
+      qa_pairs: Array<{
+        q_text: string;
+        answer: string | string[];
+      }>;
+    };
+  }> | {
+    total: {
+      value: number;
+      relation: string;
+    };
+    max_score: number;
+    hits: Array<{
+      _index: string;
+      _id: string;
+      _score: number;
+      _source: {
+        user_id: string;
+        timestamp?: string;
+        metadata: {
+          panel?: string;
+          gender?: string;
+          birth_year?: number | string;
+          age?: number;
+          age_group?: string;
+          region?: string;
+          sub_region?: string;
+        };
+        qa_pairs: Array<{
+          q_text: string;
+          answer: string | string[];
+        }>;
+      };
+    }>;
+  };
 }
 
 // 공통 분포 인터페이스

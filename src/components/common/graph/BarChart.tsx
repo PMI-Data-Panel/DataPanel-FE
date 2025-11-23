@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -59,6 +60,16 @@ const BarChart = ({
 
   const sortedData = sortData(data);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!sortedData || sortedData.length === 0) {
+    return null;
+  }
+
   // X축 도메인 계산 (최소값과 최대값 기반)
   const getXDomain = (): [number, number] => {
     if (!sortedData || sortedData.length === 0) return [0, 100];
@@ -105,12 +116,14 @@ const BarChart = ({
   };
 
   return (
-    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 w-full max-w-full overflow-hidden">
+    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: 300 }}>
       <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-6 text-center">
         {title}
       </h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <RechartsBarChart
+      {isMounted && (
+        <div style={{ width: '100%', height: 300, minHeight: 200 }}>
+          <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
+          <RechartsBarChart
           data={sortedData}
           layout="vertical"
           margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
@@ -146,6 +159,8 @@ const BarChart = ({
           </Bar>
         </RechartsBarChart>
       </ResponsiveContainer>
+      </div>
+      )}
       <div className="mt-4 text-center">
         <span className="text-xs text-gray-500">패널 수 (%)</span>
       </div>
