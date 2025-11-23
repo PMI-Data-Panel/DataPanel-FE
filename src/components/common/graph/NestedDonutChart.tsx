@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Tooltip, Cell, ResponsiveContainer, Pie, PieChart } from "recharts";
 import type { Distribution } from "../../../types/search";
 
@@ -65,12 +66,24 @@ const NestedDonutChart = ({
     return `${props.value.toFixed(1)}%`;
   };
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!innerData || innerData.length === 0 || !outerData || outerData.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white rounded-lg shadow-sm p-6" style={{ minWidth: 0, minHeight: 500 }}>
       <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">
         {title}
       </h3>
-      <ResponsiveContainer width="100%" height={400}>
+      {isMounted && (
+        <div style={{ width: '100%', height: 400, minHeight: 300 }}>
+          <ResponsiveContainer width="100%" height="100%" minHeight={300} minWidth={0}>
         <PieChart>
           {/* 안쪽 원 - 지역 (region) */}
           <Pie
@@ -119,6 +132,8 @@ const NestedDonutChart = ({
           <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
+      </div>
+      )}
       {/* 레전드 */}
       <div className="grid grid-cols-2 gap-4 mt-4">
         {/* 지역 레전드 */}

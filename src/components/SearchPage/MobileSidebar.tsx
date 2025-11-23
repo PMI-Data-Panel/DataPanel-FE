@@ -7,15 +7,17 @@ const MobileSidebar = () => {
   return (
     <div className="w-full max-w-2xl mt-6 md:hidden">
       {/* 검색 히스토리 */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">최근 검색</h3>
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-5">
+        <h3 className="text-base font-bold text-[#191f28] mb-4">최근 검색</h3>
         {searchHistory.length === 0 ? (
-          <p className="text-xs text-gray-500 text-center py-4">
-            이전 검색 히스토리가 없습니다.
-          </p>
+          <div className="flex items-center justify-center py-8">
+            <p className="text-sm text-[#8b95a1] text-center">
+              이전 검색 히스토리가 없습니다.
+            </p>
+          </div>
         ) : (
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {searchHistory.slice(0, 5).map((item) => (
+          <div className="space-y-1 max-h-64 overflow-y-auto">
+            {searchHistory.slice(0, 10).map((item) => (
               <SearchHistory key={item.id} query={item.query} data={item} />
             ))}
           </div>
