@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Home } from "lucide-react";
 import { useSearch } from "../hooks/useSearch";
 import NotFoundPage from "./NotFoundPage";
@@ -20,9 +20,20 @@ import BarChart from "../components/common/graph/BarChart";
 import TreeMapComponent from "../components/common/graph/TreeMap";
 
 const SearchResults = () => {
-  const { query, searchResults: data } = useSearch();
+  const {
+    query,
+    searchSessionId: sessionid,
+    searchResults: data,
+    addSearchSessionId,
+  } = useSearch();
   const [additionalQuery, setAdditionalQuery] = useState(""); // 추후 가능하다면 추가검색 구현 예정
   const navigate = useNavigate();
+
+  // 컴포넌트 마운팅시, data에서 세션id뽑아서 컨텍스트에 저장해두기
+  useEffect(() => {
+    addSearchSessionId(data?.session_id as string); // 일단 무시함 (session_id 당연히 받아올거라고 가정)
+    console.log("🟡 session id = ", sessionid);
+  });
 
   // 패널 목록 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,43 +142,35 @@ const SearchResults = () => {
             {/* 막대그래프 섹션 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* 성별 분포 */}
-              {genderData.length > 0 && (
-                <BarChart
-                  data={genderData}
-                  title="성별 분포"
-                  onBarClick={handleGenderClick}
-                />
-              )}
+              <BarChart
+                data={genderData}
+                title="성별 분포"
+                onBarClick={handleGenderClick}
+              />
 
               {/* 연령대 분포 */}
-              {ageData.length > 0 && (
-                <BarChart
-                  data={ageData}
-                  title="연령대 분포"
-                  onBarClick={handleAgeClick}
-                />
-              )}
+              <BarChart
+                data={ageData}
+                title="연령대 분포"
+                onBarClick={handleAgeClick}
+              />
             </div>
 
             {/* 트리맵 차트 섹션 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* 지역 분포 */}
-              {regionData.length > 0 && (
-                <TreeMapComponent
-                  data={regionData}
-                  title="지역 분포"
-                  onItemClick={handleRegionClick}
-                />
-              )}
+              <TreeMapComponent
+                data={regionData}
+                title="지역 분포"
+                onItemClick={handleRegionClick}
+              />
 
               {/* 거주지 분포 */}
-              {residenceData.length > 0 && (
-                <TreeMapComponent
-                  data={residenceData}
-                  title="거주지 분포"
-                  onItemClick={handleResidenceClick}
-                />
-              )}
+              <TreeMapComponent
+                data={residenceData}
+                title="거주지 분포"
+                onItemClick={handleResidenceClick}
+              />
             </div>
           </div>
         )}
