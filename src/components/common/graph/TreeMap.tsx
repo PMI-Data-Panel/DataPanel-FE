@@ -49,15 +49,20 @@ const convertToTreeMapData = (data: Distribution[]): TreeMapData => {
   };
 };
 
+// 현대적이고 조화로운 색상 팔레트 (더 세련되고 일관된 색상)
 const COLORS = [
-  "#E8765D", // 주황
-  "#5DA0E8", // 파랑
-  "#EA7B86", // 분홍
-  "#5DE871", // 초록
-  "#E8CB5D", // 노랑
-  "#E85DB0", // 분홍 2
-  "#905DE8", // 보라
-  "#D6E8C8", // 초록 2
+  "#4f46e5", // 인디고 블루
+  "#7c3aed", // 바이올렛
+  "#ec4899", // 핑크
+  "#f97316", // 오렌지
+  "#14b8a6", // 틸
+  "#6366f1", // 인디고
+  "#f43f5e", // 로즈
+  "#10b981", // 에메랄드
+  "#8b5cf6", // 퍼플
+  "#06b6d4", // 시안
+  "#f59e0b", // 앰버
+  "#ef4444", // 레드
 ];
 
 interface CustomizedContentProps extends TreemapNode {
@@ -94,6 +99,20 @@ const CustomizedContent = (props: CustomizedContentProps) => {
     return Math.max(10, baseSize * scale); // 최소 10px
   };
 
+  // 호버 효과를 위한 상태 (간단한 구현)
+  const colorIndex = (index || 0) % COLORS.length;
+  const baseColor = COLORS[colorIndex];
+  
+  // 색상 밝기 계산 (더 어두운 버전)
+  const getDarkerColor = (color: string) => {
+    // 간단한 어두운 버전 생성
+    const hex = color.replace('#', '');
+    const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 20);
+    const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 20);
+    const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 20);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
   return (
     <g
       onClick={handleClick}
@@ -104,24 +123,27 @@ const CustomizedContent = (props: CustomizedContentProps) => {
         y={y}
         width={width}
         height={height}
+        rx={6}
+        ry={6}
         style={{
-          fill: COLORS[(index || 0) % COLORS.length],
+          fill: baseColor,
           stroke: "#fff",
-          strokeWidth: 2,
+          strokeWidth: 2.5,
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
         }}
       />
-      {/* 텍스트 표시 로직 개선 */}
+      {/* 텍스트 표시 로직 개선 - 상단 정렬 */}
       {width >= minWidthForText && height >= minHeightForText && area >= minAreaForNameOnly ? (
         area >= minAreaForFullText ? (
-          // 큰 영역: 이름 + 숫자 표시
+          // 큰 영역: 이름 + 숫자 표시 (상단 정렬)
           <>
             <text
               x={x + width / 2}
-              y={y + height / 2 - 5}
+              y={y + 5}
               textAnchor="middle"
-              dominantBaseline="middle"
+              dominantBaseline="text-before-edge"
               fill="#fff"
-              fontSize={getFontSize(12)}
+              fontSize={getFontSize(14)}
               fontWeight="600"
               style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
             >
@@ -129,11 +151,11 @@ const CustomizedContent = (props: CustomizedContentProps) => {
             </text>
             <text
               x={x + width / 2}
-              y={y + height / 2 + 12}
+              y={y + 22}
               textAnchor="middle"
-              dominantBaseline="middle"
+              dominantBaseline="text-before-edge"
               fill="#fff"
-              fontSize={getFontSize(10)}
+              fontSize={getFontSize(11)}
               fillOpacity={0.95}
               style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
             >
@@ -141,14 +163,14 @@ const CustomizedContent = (props: CustomizedContentProps) => {
             </text>
           </>
         ) : (
-          // 작은 영역: 이름만 표시 (더 작은 폰트)
+          // 작은 영역: 이름만 표시 (상단 정렬)
           <text
             x={x + width / 2}
-            y={y + height / 2}
+            y={y + 5}
             textAnchor="middle"
-            dominantBaseline="middle"
+            dominantBaseline="text-before-edge"
             fill="#fff"
-            fontSize={getFontSize(9)}
+            fontSize={getFontSize(10)}
             fontWeight="600"
             style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
           >
@@ -173,11 +195,9 @@ const TreeMapComponent = ({
   const isDistribution =
     Array.isArray(data) && data.length > 0 && "label" in data[0];
   
-  const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -200,25 +220,27 @@ const TreeMapComponent = ({
   );
 
   return (
-    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 flex flex-col items-center justify-center w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: isMobile ? 400 : 300 }}>
+    <div className="flex flex-col items-center justify-center w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: isMobile ? 320 : 240 }}>
       {title && (
-        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">
-          {title}
-        </h3>
+        <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0 px-4 pt-4">
+          <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+          <h3 className="text-base md:text-lg font-semibold text-gray-800 text-center tracking-tight">
+            {title}
+          </h3>
+        </div>
       )}
-      {isMounted && (
-        <div style={{ width: '100%', height: isMobile ? 400 : 300, minHeight: isMobile ? 350 : 200 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={isMobile ? 350 : 200} minWidth={0}>
+      <div style={{ width: '100%', height: isMobile ? 320 : 240, minHeight: isMobile ? 280 : 180 }}>
+        <ResponsiveContainer width="100%" height="100%" minHeight={isMobile ? 280 : 180} minWidth={0}>
           <Treemap
             data={[treeMapData] as unknown as TreeMapData[]}
             dataKey={dataKey}
             stroke="#fff"
             fill="#8884d8"
             content={ContentWithClick as unknown as React.ReactElement}
+            isAnimationActive={false}
           />
         </ResponsiveContainer>
       </div>
-      )}
     </div>
   );
 };

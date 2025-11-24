@@ -18,6 +18,7 @@ export interface ResponseSearchNlDto {
   page_size: number;
   has_more: boolean;
   llm_summary: LLMSummary;
+  session_id: string;
 }
 
 export interface SearchNlResults {
@@ -25,6 +26,7 @@ export interface SearchNlResults {
   score: number;
   timestamp: string;
   survey_datetime?: string;
+  panel?: string; // 패널 정보 추가
   demographic_info?: {
     age_group: string;
     gender: string;
@@ -207,3 +209,38 @@ type Income = Distribution<IncomeLabel>;
 type Vehicle = Distribution<VehicleLabel>;
 type Smoker = Distribution<SmokerLabel>;
 type Drinker = Distribution<DrinkerLabel>;
+
+// (POST) /search/refine/query - request
+export interface RequestLLMRequeryDto {
+  session_id: string;
+  query: string;
+  max_user_ids: number;
+  llm_instructions: string;
+}
+
+// (POST) /search/refine/query - response
+export interface ResponseLLMRequeryDto {
+  answer: string;
+  session_id: string;
+}
+
+// (GET) /visualization/qa/all-statistics - response
+export interface AnswerDistribution {
+  answer: string;
+  count: number;
+  percentage: number;
+}
+
+export interface QuestionStatistics {
+  question_field: string;
+  question_description: string;
+  total_responses: number;
+  answer_distribution: AnswerDistribution[];
+}
+
+export interface AllStatisticsResponse {
+  index_name: string;
+  total_users: number;
+  statistics: Record<string, QuestionStatistics>;
+}
+

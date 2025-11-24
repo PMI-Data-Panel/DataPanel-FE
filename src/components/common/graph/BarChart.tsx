@@ -11,25 +11,42 @@ import {
 } from "recharts";
 import type { Distribution } from "../../../types/search";
 
+// 현대적이고 조화로운 그라데이션 색상 팔레트
 const COLORS = [
-  "#3b82f6",
-  "#8b5cf6",
-  "#ec4899",
-  "#f59e0b",
-  "#10b981",
-  "#06b6d4",
-  "#f97316",
-  "#6366f1",
+  "url(#gradient-blue)",
+  "url(#gradient-emerald)",
+  "url(#gradient-purple)",
+  "url(#gradient-teal)",
+  "url(#gradient-indigo)",
+  "url(#gradient-cyan)",
+  "url(#gradient-rose)",
+  "url(#gradient-amber)",
+];
+
+// 단색 버전 (그라데이션이 적용되지 않을 경우를 위한 fallback)
+const SOLID_COLORS = [
+  "#3b82f6", // blue-500
+  "#10b981", // emerald-500
+  "#8b5cf6", // violet-500
+  "#14b8a6", // teal-500
+  "#6366f1", // indigo-500
+  "#06b6d4", // cyan-500
+  "#f43f5e", // rose-500
+  "#f59e0b", // amber-500
 ];
 
 const BarChart = ({
   data,
   title,
   onBarClick,
+  scrollable = false,
+  maxScrollHeight = 600,
 }: {
   data?: Distribution[];
   title: string;
   onBarClick?: (data: Distribution) => void;
+  scrollable?: boolean;
+  maxScrollHeight?: number;
 }) => {
   // 데이터 정렬 함수
   const sortData = (data?: Distribution[]) => {
@@ -61,9 +78,16 @@ const BarChart = ({
   const sortedData = sortData(data);
 
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   if (!sortedData || sortedData.length === 0) {
@@ -75,23 +99,13 @@ const BarChart = ({
     if (!sortedData || sortedData.length === 0) return [0, 100];
 
     const percentages = sortedData.map(d => d.percentage);
-    const minPercentage = Math.min(...percentages);
     const maxPercentage = Math.max(...percentages);
 
-    // 최소값에서 여유를 두고 시작 (더 차이가 잘 보이도록)
-    const range = maxPercentage - minPercentage;
-
-    // range가 0이면 (모든 값이 같거나 하나의 항목만 있을 때) 고정 범위 사용
-    if (range === 0) {
-      return [0, 100];
-    }
-
-    const padding = range * 0.1; // 10% 패딩
-
-    const domainMin = Math.max(0, Math.floor(minPercentage - padding));
-    const domainMax = Math.ceil(maxPercentage + padding);
-
-    return [domainMin, domainMax];
+    // 최대값의 110%까지 표시하여 여유 공간 확보
+    const domainMax = Math.ceil(maxPercentage * 1.1);
+    
+    // 최소값은 항상 0부터 시작
+    return [0, Math.max(domainMax, 10)]; // 최소 10%는 표시
   };
 
   // 툴팁
@@ -105,36 +119,136 @@ const BarChart = ({
     if (active && payload && payload.length) {
       const item = payload[0].payload;
       return (
-        <div className="bg-gray-900 text-white px-3 py-2 rounded shadow-lg text-xs">
-          <div className="font-semibold">{item.label}</div>
-          <div>비율: {item.percentage.toFixed(2)}%</div>
-          <div>인원: {item.value}명</div>
+        <div className="bg-white text-gray-800 px-4 py-3 rounded-lg shadow-xl text-xs border border-gray-200">
+          <div className="font-semibold mb-2 text-sm text-gray-900">{item.label}</div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span className="text-gray-600">비율: </span>
+              <span className="text-gray-900 font-semibold">{item.percentage.toFixed(2)}%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-600">인원: </span>
+              <span className="text-gray-900 font-semibold">{item.value.toLocaleString()}명</span>
+            </div>
+          </div>
         </div>
       );
     }
     return null;
   };
 
+  // YAxis width 계산 (라벨 길이에 따라 동적 조정)
+  const getYAxisWidth = () => {
+    if (!sortedData || sortedData.length === 0) return 50;
+    const maxLabelLength = Math.max(...sortedData.map(d => d.label.length));
+    // 최소 45px, 최대 70px, 라벨 길이에 따라 조정
+    return Math.min(Math.max(maxLabelLength * 6, 45), 70);
+  };
+
+  const chartHeight = isMobile ? 320 : 240;
+  const chartAreaHeight = isMobile ? 280 : 180;
+  
+  // 스크롤 가능한 경우 높이 계산
+  // 각 바 항목당 약 50px 높이 (라벨 + 바 + 여백) - 텍스트 겹침 방지를 위해 간격 증가
+  const itemHeight = 50;
+  const totalChartHeight = sortedData.length * itemHeight;
+  const containerMaxHeight = scrollable ? maxScrollHeight : undefined;
+  const containerHeight = scrollable 
+    ? Math.min(totalChartHeight, maxScrollHeight) 
+    : chartAreaHeight;
+
   return (
-    <div className="bg-gray-150 rounded-lg shadow-xl p-3 md:p-6 w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: 300 }}>
-      <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-6 text-center">
-        {title}
-      </h3>
+    <div className="w-full max-w-full overflow-hidden flex flex-col" style={{ minWidth: 0, minHeight: scrollable ? undefined : chartHeight }}>
+      <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0 px-4 pt-4">
+        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <h3 className="text-sm md:text-base font-semibold text-gray-800 text-center tracking-tight">
+          {title}
+        </h3>
+      </div>
       {isMounted && (
-        <div style={{ width: '100%', height: 300, minHeight: 200 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
+        <div 
+          className={scrollable ? "overflow-y-auto overflow-x-hidden" : ""}
+          style={{ 
+            width: '100%', 
+            height: containerHeight, 
+            minHeight: scrollable ? undefined : chartAreaHeight, 
+            maxHeight: containerMaxHeight,
+            flex: scrollable ? 0 : 1,
+            scrollBehavior: scrollable ? 'smooth' : 'auto'
+          }}
+        >
+          <ResponsiveContainer 
+            width="100%" 
+            height={scrollable ? totalChartHeight : "100%"} 
+            minHeight={scrollable ? totalChartHeight : chartAreaHeight} 
+            minWidth={0}
+          >
           <RechartsBarChart
           data={sortedData}
           layout="vertical"
-          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+          margin={{ top: 10, right: getYAxisWidth() - 10, left: getYAxisWidth() - 10, bottom: 15 }}
         >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" domain={getXDomain()} tick={{ fontSize: 12 }} />
+          <defs>
+            {/* 그라데이션 정의 */}
+            <linearGradient id="gradient-blue" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#4f46e5" stopOpacity={1} />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-purple" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#7c3aed" stopOpacity={1} />
+              <stop offset="100%" stopColor="#a855f7" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-pink" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#ec4899" stopOpacity={1} />
+              <stop offset="100%" stopColor="#f472b6" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-orange" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#f97316" stopOpacity={1} />
+              <stop offset="100%" stopColor="#fb923c" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-teal" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#14b8a6" stopOpacity={1} />
+              <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-indigo" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
+              <stop offset="100%" stopColor="#818cf8" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-rose" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#f43f5e" stopOpacity={1} />
+              <stop offset="100%" stopColor="#fb7185" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-emerald" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+              <stop offset="100%" stopColor="#34d399" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-cyan" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#06b6d4" stopOpacity={1} />
+              <stop offset="100%" stopColor="#22d3ee" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="gradient-amber" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity={1} />
+              <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.8} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
+          <XAxis 
+            type="number" 
+            domain={getXDomain()} 
+            tick={{ fontSize: 11, fill: "#6b7280" }}
+            axisLine={{ stroke: "#d1d5db" }}
+            tickMargin={5}
+          />
           <YAxis
             dataKey="label"
             type="category"
-            width={50}
-            tick={{ fontSize: 11 }}
+            width={getYAxisWidth()}
+            tick={{ fontSize: 10, fill: "#6b7280" }}
+            axisLine={{ stroke: "#d1d5db" }}
+            tickMargin={8}
+            interval={0}
           />
           <Tooltip
             content={<CustomTooltip />}
@@ -142,7 +256,7 @@ const BarChart = ({
           />
           <Bar
             dataKey="percentage"
-            radius={[0, 8, 8, 0]}
+            radius={[0, 12, 12, 0]}
             cursor="pointer"
             onClick={(item: { payload?: Distribution }) => {
               if (item.payload) {
@@ -154,6 +268,9 @@ const BarChart = ({
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
+                style={{ 
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                }}
               />
             ))}
           </Bar>
@@ -161,9 +278,6 @@ const BarChart = ({
       </ResponsiveContainer>
       </div>
       )}
-      <div className="mt-4 text-center">
-        <span className="text-xs text-gray-500">패널 수 (%)</span>
-      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getVisualization } from "../../apis/search";
+import { getVisualization, getAllStatistics } from "../../apis/search";
 import { QUERY_KEY } from "../../constants/key";
 
 function useGetVisualization() {
@@ -11,4 +11,14 @@ function useGetVisualization() {
   });
 }
 
+function useGetAllStatistics() {
+  return useQuery({
+    queryKey: [QUERY_KEY.allStatistics],
+    queryFn: () => getAllStatistics(),
+    staleTime: 10 * 60 * 1_000, // 10분
+    gcTime: 30 * 60 * 1_000, // 30분
+  });
+}
+
 export default useGetVisualization;
+export { useGetAllStatistics };
