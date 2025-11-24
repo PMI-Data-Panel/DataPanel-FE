@@ -220,8 +220,18 @@ export interface RequestLLMRequeryDto {
 
 // (POST) /search/refine/query - response
 export interface ResponseLLMRequeryDto {
-  answer: string;
   session_id: string;
+  previous_query: string | null;
+  previous_top_user_ids: string[];
+  analyzed_user_ids: string[];
+  user_data_count: number;
+  llm_analysis: {
+    model: string;
+    generated_at: string;
+    analysis: string;
+    user_count: number;
+  };
+  took_ms: number;
 }
 
 // (GET) /visualization/qa/all-statistics - response

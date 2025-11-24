@@ -49,9 +49,6 @@ const Navbar = () => {
           >
             Team
           </span>
-          <span className="cursor-pointer" onClick={() => navigate("/data")}>
-            Data
-          </span>
           <span className="cursor-pointer" onClick={() => navigate("/search")}>
             Search
           </span>

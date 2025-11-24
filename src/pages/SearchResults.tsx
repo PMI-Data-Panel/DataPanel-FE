@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Home } from "lucide-react";
+import { Home, MessageSquare, X } from "lucide-react";
 import { useSearch } from "../hooks/useSearch";
 import { useNavigate } from "react-router-dom";
 import AISearchResult from "../components/SearchResults/AISearchResult";
@@ -33,6 +33,9 @@ const SearchResults = () => {
   const resultsListRef = useRef<HTMLDivElement>(null); // 검색 결과 리스트 참조
   const isInitialLoadRef = useRef(true); // 처음 로드인지 확인하는 플래그
   const prevDataRef = useRef<typeof data>(null); // 이전 데이터 참조
+
+  // 채팅창 열림/닫힘 상태
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // 패널 목록 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -234,28 +237,48 @@ const SearchResults = () => {
               </button>
             </div>
 
-            {/* AI 분석 요약과 채팅창을 좌우로 분할 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-stretch">
-              {/* 왼쪽: AI 분석 요약 */}
-              <div className="flex flex-col space-y-3 md:space-y-4">
+            {/* AI 분석 요약/사용자 목록과 차트를 좌우로 분할 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
+              {/* 왼쪽: AI 분석 요약과 사용자 목록 */}
+              <div className="flex flex-col space-y-4 md:space-y-6">
+                {/* AI 분석 요약 */}
                 <div className="flex-1 overflow-y-auto">
                   <AISearchResult query={query} data={data} />
                 </div>
 
                 {/* Null 값 주의 문구 */}
                 {hasNullValues && <NullWarning />}
+
+                {/* 사용자 목록 영역 */}
+                <div ref={resultsListRef} className="flex flex-col space-y-4">
+                  <div className="flex-1">
+                    <SearchResultsList
+                      data={{
+                        ...data,
+                        results: displayedResults,
+                        total_hits: data.results?.length || 0,
+                      }}
+                      allResults={data.results || []}
+                      query={query}
+                    />
+                  </div>
+                  
+                  {/* 페이징 */}
+                  <div className="shrink-0">
+                    <Pagination
+                      currentPage={currentPage}
+                      pageSize={DISPLAY_PAGE_SIZE}
+                      totalHits={data.results?.length || 0}
+                      hasMore={currentPage < totalPages}
+                      onPageChange={handlePageChange}
+                      isLoading={isPending}
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* 오른쪽: AI 채팅창 - 스크롤 가능 */}
-              <div className="flex flex-col h-[600px] max-h-[600px]">
-                <AIChat query={query} sessionId={data?.session_id} />
-              </div>
-            </div>
-
-            {/* 차트 영역과 사용자 목록 영역을 좌우로 분할 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
-              {/* 왼쪽: 차트 영역 - 2x2 그리드 */}
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
+              {/* 오른쪽: 차트 영역 - 세로로 일렬 배치 */}
+              <div className="flex flex-col gap-4 md:gap-6">
                 {/* 성별 분포 */}
                 {genderData.length > 0 && (
                   <GenderChart
@@ -271,6 +294,7 @@ const SearchResults = () => {
                     data={ageData}
                     title="연령대 분포"
                     onBarClick={handleAgeClick}
+                    customHeight={350}
                   />
                 )}
 
@@ -291,33 +315,6 @@ const SearchResults = () => {
                     onItemClick={handlePanelClick}
                   />
                 )}
-              </div>
-
-              {/* 오른쪽: 사용자 목록 영역 */}
-              <div ref={resultsListRef} className="flex flex-col space-y-4 min-h-0">
-                <div className="flex-1">
-                  <SearchResultsList
-                    data={{
-                      ...data,
-                      results: displayedResults,
-                      total_hits: data.results?.length || 0,
-                    }}
-                    allResults={data.results || []}
-                    query={query}
-                  />
-                </div>
-                
-                {/* 페이징 */}
-                <div className="shrink-0">
-                  <Pagination
-                    currentPage={currentPage}
-                    pageSize={DISPLAY_PAGE_SIZE}
-                    totalHits={data.results?.length || 0}
-                    hasMore={currentPage < totalPages}
-                    onPageChange={handlePageChange}
-                    isLoading={isPending}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -355,6 +352,31 @@ const SearchResults = () => {
           setIsModalOpen(true);
         }}
       />
+
+      {/* 하단 고정 채팅창 */}
+      {data && (
+        <>
+          {/* 채팅창 토글 버튼 - 항상 표시 */}
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className={`fixed ${isChatOpen ? 'bottom-[520px] md:bottom-[620px] right-4' : 'bottom-4 right-4'} bg-[#3182f6] text-white rounded-full p-3 md:p-4 shadow-xl hover:bg-[#1b64da] transition-all duration-300 z-[60] flex items-center justify-center`}
+            aria-label={isChatOpen ? "채팅창 닫기" : "채팅창 열기"}
+          >
+            {isChatOpen ? (
+              <X className="w-5 h-5 md:w-6 md:h-6" />
+            ) : (
+              <MessageSquare className="w-5 h-5 md:w-6 md:h-6" />
+            )}
+          </button>
+
+          {/* 채팅창 */}
+          <div className={`fixed bottom-0 right-0 left-0 md:left-auto md:right-4 md:bottom-4 md:w-96 z-50 transition-all duration-300 ${isChatOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className="bg-white rounded-t-xl md:rounded-xl shadow-2xl border border-gray-200 h-[500px] md:h-[600px] max-h-[80vh] flex flex-col overflow-hidden">
+              <AIChat query={query} sessionId={data?.session_id} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

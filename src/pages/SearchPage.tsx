@@ -27,24 +27,19 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
   // 데이터를 Distribution 형식으로 변환
   const convertToDistribution = (
     answerDistribution: Array<{ answer: string; count: number; percentage: number }>,
-    sortByNumber = false,
-    questionKey?: string,
-    questionDescription?: string
+    sortByNumber = false
   ): Distribution[] => {
     const distribution = answerDistribution.map(item => {
       let label = item.answer;
-      // 직업/직무, 음용경험 술 관련 질문인 경우 괄호와 그 안의 내용 제거
-      const shouldRemoveParentheses = 
-        (questionKey && (questionKey.includes('직업') || questionKey.includes('직무'))) ||
-        (questionDescription && (questionDescription.includes('직업') || questionDescription.includes('직무'))) ||
-        (questionKey && (questionKey.includes('음용경험') || questionKey.includes('술'))) ||
-        (questionDescription && (questionDescription.includes('음용경험') || questionDescription.includes('술')));
-      if (shouldRemoveParentheses) {
-        // 괄호와 그 안의 모든 내용을 제거
+      // 모든 차트에서 괄호와 그 안의 내용 제거 (여러 번 실행하여 중첩된 괄호도 제거)
+      while (label.includes('(') || label.includes(')')) {
         label = label.replace(/\([^()]*\)/g, '').trim();
-        // 연속된 공백을 하나로 정리
-        label = label.replace(/\s+/g, ' ').trim();
+        // 불완전한 괄호도 제거 (여는 괄호만 있거나 닫는 괄호만 있는 경우)
+        label = label.replace(/\([^)]*$/g, '').trim();
+        label = label.replace(/^[^(]*\)/g, '').trim();
       }
+      // 연속된 공백을 하나로 정리
+      label = label.replace(/\s+/g, ' ').trim();
       return {
         label,
         value: item.count,
@@ -145,13 +140,31 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
       colors?: string[];
     }> = [];
     
+    // 지역과 세부 지역은 한 줄에 두 개씩 배치 (스크롤 가능)
+    const regionBarCharts: Array<{
+      key: string;
+      title: string;
+      data: Distribution[];
+      type: 'bar';
+      colors?: string[];
+    }> = [];
+    
+    // 흡연경험과 최종학력은 한 줄에 두 개씩 배치
+    const educationSmokerBarCharts: Array<{
+      key: string;
+      title: string;
+      data: Distribution[];
+      type: 'bar';
+      colors?: string[];
+    }> = [];
+    
     let currentGroup: typeof groups[0]['charts'] = [];
     let currentCols = 3;
 
     keys.forEach((key) => {
       const stat = statistics[key];
       // 출생년도는 숫자 오름차순으로 정렬
-      const distribution = convertToDistribution(stat.answer_distribution, key === 'q_birth_year', key, stat.question_description);
+      const distribution = convertToDistribution(stat.answer_distribution, key === 'q_birth_year');
       const answerCount = distribution.length;
 
       // 차트 타입 결정
@@ -160,8 +173,9 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
 
       // 특정 필드에 맞는 차트 타입 지정
       if (key === 'q_region' || key === 'q_sub_region') {
-        chartType = 'treemap';
-        currentCols = 1; // 거주지는 전체 너비
+        chartType = 'bar'; // 지역과 세부 지역은 BarChart로 변경 (스크롤 가능)
+      } else if (stat.question_description.includes('흡연경험') || stat.question_description.includes('최종학력')) {
+        chartType = 'bar'; // 흡연경험과 최종학력은 BarChart로 변경
       } else if (key === 'q_personal_income' || key === 'q_household_income' || key === 'q_birth_year') {
         chartType = 'area';
         colors = ['#3b82f6'];
@@ -184,8 +198,17 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
         chartType = 'pie';
       }
 
-      // 거주지, 세부지역, 출생년도, 소득은 별도 그룹으로 (전체 너비)
-      if (key === 'q_region' || key === 'q_sub_region' || key === 'q_birth_year' || key === 'q_personal_income' || key === 'q_household_income') {
+      // 지역과 세부 지역은 별도로 수집 (한 줄에 두 개씩)
+      if (key === 'q_region' || key === 'q_sub_region') {
+        regionBarCharts.push({
+          key,
+          title: stat.question_description,
+          data: distribution,
+          type: 'bar' as const,
+          colors,
+        });
+      } else if (key === 'q_birth_year' || key === 'q_personal_income' || key === 'q_household_income') {
+        // 출생년도, 소득은 별도 그룹으로 (전체 너비)
         if (currentGroup.length > 0) {
           groups.push({ charts: currentGroup, cols: currentCols });
           currentGroup = [];
@@ -229,6 +252,15 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
             type: 'bar',
             colors,
           });
+        } else if (stat.question_description.includes('흡연경험') || stat.question_description.includes('최종학력')) {
+          // 흡연경험과 최종학력은 별도로 수집 (한 줄에 두 개씩)
+          educationSmokerBarCharts.push({
+            key,
+            title: stat.question_description,
+            data: distribution,
+            type: 'bar',
+            colors,
+          });
         } else if (
           stat.question_description.includes('가전제품') || 
           stat.question_description.includes('보유 휴대폰 브랜드') || 
@@ -236,11 +268,10 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
           stat.question_description.includes('자동차 제조사') ||
           stat.question_description.includes('자동차 모델') ||
           stat.question_description.includes('담배브랜드') ||
-          stat.question_description.includes('흡연경험') ||
           stat.question_description.includes('음용경험') ||
           stat.question_description.includes('술')
         ) {
-          // 보유 가전제품, 보유 휴대폰 브랜드, 보유 휴대폰 모델, 자동차 제조사, 자동차 모델, 흡연경험 담배브랜드, 음용경험 술은 별도로 수집 (한 줄에 두 개씩, 스크롤 가능)
+          // 보유 가전제품, 보유 휴대폰 브랜드, 보유 휴대폰 모델, 자동차 제조사, 자동차 모델, 담배브랜드, 음용경험 술은 별도로 수집 (한 줄에 두 개씩, 스크롤 가능)
           productBarCharts.push({
             key,
             title: stat.question_description,
@@ -276,6 +307,14 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
       }
     });
 
+    // 지역과 세부 지역을 한 줄에 두 개씩 추가
+    if (regionBarCharts.length > 0) {
+      groups.push({
+        charts: regionBarCharts,
+        cols: 2,
+      });
+    }
+
     // 자녀수와 가족수를 한 줄에 두 개씩 추가
     if (familyBarCharts.length > 0) {
       groups.push({
@@ -307,6 +346,14 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
         cols: 1,
       });
     });
+
+    // 흡연경험과 최종학력을 한 줄에 두 개씩 추가 (맨 아래)
+    if (educationSmokerBarCharts.length > 0) {
+      groups.push({
+        charts: educationSmokerBarCharts,
+        cols: 2,
+      });
+    }
 
     // 파이차트를 2개씩 묶어서 그룹에 추가
     for (let i = 0; i < pieCharts.length; i += 2) {
@@ -400,6 +447,7 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
                     <BarChart
                       data={chart.data}
                       title={chart.title}
+                      onBarClick={chart.key === 'q_region' ? handleRegionClick : undefined}
                       scrollable={
                         chart.title.includes('직업') || 
                         chart.title.includes('직무') ||
@@ -411,7 +459,10 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
                         chart.title.includes('담배브랜드') ||
                         chart.title.includes('흡연경험') ||
                         chart.title.includes('음용경험') ||
-                        chart.title.includes('술')
+                        chart.title.includes('술') ||
+                        chart.title.includes('지역') ||
+                        chart.key === 'q_region' ||
+                        chart.key === 'q_sub_region'
                       }
                     />
                   )}

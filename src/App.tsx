@@ -10,7 +10,6 @@ import { SearchProvider } from "./provider/SearchProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import SearchResults from "./pages/SearchResults";
-import DataPage from "./pages/DataPage";
 
 const queryClient = new QueryClient();
 // 라우팅
@@ -31,10 +30,6 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <SearchPage />,
-      },
-      {
-        path: "/data",
-        element: <DataPage />,
       },
       {
         path: "/search/results",

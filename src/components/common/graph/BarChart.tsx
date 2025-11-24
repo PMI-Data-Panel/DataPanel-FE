@@ -23,30 +23,20 @@ const COLORS = [
   "url(#gradient-amber)",
 ];
 
-// 단색 버전 (그라데이션이 적용되지 않을 경우를 위한 fallback)
-const SOLID_COLORS = [
-  "#3b82f6", // blue-500
-  "#10b981", // emerald-500
-  "#8b5cf6", // violet-500
-  "#14b8a6", // teal-500
-  "#6366f1", // indigo-500
-  "#06b6d4", // cyan-500
-  "#f43f5e", // rose-500
-  "#f59e0b", // amber-500
-];
-
 const BarChart = ({
   data,
   title,
   onBarClick,
   scrollable = false,
   maxScrollHeight = 600,
+  customHeight,
 }: {
   data?: Distribution[];
   title: string;
   onBarClick?: (data: Distribution) => void;
   scrollable?: boolean;
   maxScrollHeight?: number;
+  customHeight?: number;
 }) => {
   // 데이터 정렬 함수
   const sortData = (data?: Distribution[]) => {
@@ -147,8 +137,8 @@ const BarChart = ({
     return Math.min(Math.max(maxLabelLength * 6, 45), 70);
   };
 
-  const chartHeight = isMobile ? 320 : 240;
-  const chartAreaHeight = isMobile ? 280 : 180;
+  const chartHeight = customHeight ? customHeight + 80 : (isMobile ? 320 : 240);
+  const chartAreaHeight = customHeight ? customHeight : (isMobile ? 280 : 180);
   
   // 스크롤 가능한 경우 높이 계산
   // 각 바 항목당 약 50px 높이 (라벨 + 바 + 여백) - 텍스트 겹침 방지를 위해 간격 증가
@@ -160,10 +150,10 @@ const BarChart = ({
     : chartAreaHeight;
 
   return (
-    <div className="w-full max-w-full overflow-hidden flex flex-col" style={{ minWidth: 0, minHeight: scrollable ? undefined : chartHeight }}>
-      <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0 px-4 pt-4">
+    <div className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col" style={{ minWidth: 0, minHeight: scrollable ? undefined : chartHeight }}>
+      <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0">
         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-        <h3 className="text-sm md:text-base font-semibold text-gray-800 text-center tracking-tight">
+        <h3 className="text-sm md:text-base font-bold text-gray-800 text-center">
           {title}
         </h3>
       </div>

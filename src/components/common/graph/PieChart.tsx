@@ -82,17 +82,17 @@ const PieChartComponent = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: 240 }}>
+    <div className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col" style={{ minWidth: 0, minHeight: 320 }}>
       {title && (
-        <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0 px-4 pt-4">
+        <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0">
           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-          <h3 className="text-sm md:text-base font-semibold text-gray-800 text-center tracking-tight">
+          <h3 className="text-sm md:text-base font-bold text-gray-800 text-center">
             {title}
           </h3>
         </div>
       )}
-      <div style={{ width: '100%', height: 240, minHeight: 180, flex: 1, padding: '0 1rem' }}>
-        <ResponsiveContainer width="100%" height="100%" minHeight={180} minWidth={0}>
+      <div style={{ width: '100%', height: 280, minHeight: 280, flex: 1, padding: '0 1rem' }}>
+        <ResponsiveContainer width="100%" height="100%" minHeight={280} minWidth={0}>
           <PieChart>
             <Pie
               data={data}
@@ -104,7 +104,7 @@ const PieChartComponent = ({
               isAnimationActive={isAnimationActive}
               cx="50%"
               cy="50%"
-              outerRadius={80}
+              outerRadius={90}
               onClick={(entry: Distribution) => handleClick(entry)}
               style={{ cursor: onItemClick ? 'pointer' : 'default' }}
               activeShape={false}

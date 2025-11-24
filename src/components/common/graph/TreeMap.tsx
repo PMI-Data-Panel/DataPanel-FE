@@ -132,16 +132,16 @@ const CustomizedContent = (props: CustomizedContentProps) => {
           filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
         }}
       />
-      {/* 텍스트 표시 로직 개선 - 상단 정렬 */}
+      {/* 텍스트 표시 로직 개선 - 중앙 정렬 */}
       {width >= minWidthForText && height >= minHeightForText && area >= minAreaForNameOnly ? (
         area >= minAreaForFullText ? (
-          // 큰 영역: 이름 + 숫자 표시 (상단 정렬)
+          // 큰 영역: 이름 + 숫자 표시 (중앙 정렬)
           <>
             <text
               x={x + width / 2}
-              y={y + 5}
+              y={y + height / 2 - 8}
               textAnchor="middle"
-              dominantBaseline="text-before-edge"
+              dominantBaseline="middle"
               fill="#fff"
               fontSize={getFontSize(14)}
               fontWeight="600"
@@ -151,9 +151,9 @@ const CustomizedContent = (props: CustomizedContentProps) => {
             </text>
             <text
               x={x + width / 2}
-              y={y + 22}
+              y={y + height / 2 + 10}
               textAnchor="middle"
-              dominantBaseline="text-before-edge"
+              dominantBaseline="middle"
               fill="#fff"
               fontSize={getFontSize(11)}
               fillOpacity={0.95}
@@ -163,12 +163,12 @@ const CustomizedContent = (props: CustomizedContentProps) => {
             </text>
           </>
         ) : (
-          // 작은 영역: 이름만 표시 (상단 정렬)
+          // 작은 영역: 이름만 표시 (중앙 정렬)
           <text
             x={x + width / 2}
-            y={y + 5}
+            y={y + height / 2}
             textAnchor="middle"
-            dominantBaseline="text-before-edge"
+            dominantBaseline="middle"
             fill="#fff"
             fontSize={getFontSize(10)}
             fontWeight="600"
@@ -220,17 +220,17 @@ const TreeMapComponent = ({
   );
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-full overflow-hidden" style={{ minWidth: 0, minHeight: isMobile ? 320 : 240 }}>
+    <div className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col" style={{ minWidth: 0, minHeight: isMobile ? 400 : 320 }}>
       {title && (
-        <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0 px-4 pt-4">
+        <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0">
           <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-          <h3 className="text-base md:text-lg font-semibold text-gray-800 text-center tracking-tight">
+          <h3 className="text-sm md:text-base font-bold text-gray-800 text-center">
             {title}
           </h3>
         </div>
       )}
-      <div style={{ width: '100%', height: isMobile ? 320 : 240, minHeight: isMobile ? 280 : 180 }}>
-        <ResponsiveContainer width="100%" height="100%" minHeight={isMobile ? 280 : 180} minWidth={0}>
+      <div style={{ width: '100%', height: isMobile ? 360 : 280, minHeight: isMobile ? 360 : 280 }}>
+        <ResponsiveContainer width="100%" height="100%" minHeight={isMobile ? 360 : 280} minWidth={0}>
           <Treemap
             data={[treeMapData] as unknown as TreeMapData[]}
             dataKey={dataKey}
