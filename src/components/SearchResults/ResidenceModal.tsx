@@ -1,6 +1,6 @@
 import { X, Download } from "lucide-react";
 import type { SearchNlResults } from "../../types/search";
-import TreeMapComponent from "../common/graph/TreeMap";
+import BarChart from "../common/graph/BarChart";
 import type { Distribution } from "../../types/search";
 
 interface ResidenceModalProps {
@@ -97,10 +97,12 @@ const ResidenceModal = ({
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
           {/* 거주지 분포 차트 */}
           {residenceData.length > 0 && (
-            <TreeMapComponent
+            <BarChart
               data={residenceData}
               title={`${regionName} 거주지 분포`}
-              onItemClick={onResidenceClick}
+              onBarClick={onResidenceClick}
+              scrollable={true}
+              maxScrollHeight={500}
             />
           )}
 

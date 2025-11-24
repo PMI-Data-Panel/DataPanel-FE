@@ -369,7 +369,7 @@ const SearchResults = () => {
           </button>
 
           {/* 채팅창 */}
-          <div className={`fixed bottom-0 right-0 left-0 md:left-auto md:right-4 md:bottom-4 md:w-96 z-50 transition-all duration-300 ${isChatOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+          <div className={`fixed bottom-0 right-0 left-0 md:left-auto md:right-4 md:bottom-4 md:w-[450px] z-50 transition-all duration-300 ${isChatOpen ? 'translate-y-0' : 'translate-y-full'}`}>
             <div className="bg-white rounded-t-xl md:rounded-xl shadow-2xl border border-gray-200 h-[500px] md:h-[600px] max-h-[80vh] flex flex-col overflow-hidden">
               <AIChat query={query} sessionId={data?.session_id} />
             </div>
