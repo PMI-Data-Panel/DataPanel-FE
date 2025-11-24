@@ -28,7 +28,7 @@ const Navbar = () => {
     <div 
       className="flex items-center px-3 md:px-6 py-2.5 text-white w-full max-w-full overflow-x-hidden"
       style={{
-        background: 'linear-gradient(to right, #2DC5F4, #2E77BE)'
+        background: '#2E77BE'
       }}
     >
       {/* 로고 - 왼쪽 고정 */}
@@ -41,7 +41,7 @@ const Navbar = () => {
 
       {/* 메뉴 - 80% 가로폭에 균등 분배 */}
       <div className="flex flex-1 justify-center">
-        <div className="flex w-[60%] lg:w-[40%] xl:w-[30%] max-w-3xl justify-between items-center font-bold text-sm md:text-base">
+        <div className="flex w-[80%] lg:w-[70%] xl:w-[60%] max-w-4xl justify-between items-center font-bold text-sm md:text-base">
           <span
             className="cursor-pointer"
             onClick={() => scrollToSection("about")}

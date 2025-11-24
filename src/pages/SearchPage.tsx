@@ -11,7 +11,7 @@ import { TOTAL_PANEL_COUNT } from "../constants/number";
 import { useGetAllStatistics } from "../hooks/queries/useGetVisualization";
 import type { AllStatisticsResponse, Distribution } from "../types/search";
 import { useMemo, useState } from "react";
-import { Search, Send } from "lucide-react";
+import { Search, Send, Menu, X } from "lucide-react";
 
 
 // 카테고리 타입 정의
@@ -471,11 +471,11 @@ const StatisticsCharts = ({
                   </div>
         ))
       ) : selectedCategory ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 font-bold text-black">
           {categoryFilter.trim() ? '필터 조건에 맞는 차트가 없습니다.' : '차트가 없습니다.'}
                 </div>
       ) : (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 font-bold text-black">
           왼쪽에서 카테고리를 선택해주세요.
         </div>
       )}
@@ -491,6 +491,7 @@ const SearchPage = () => {
   const { data: statisticsData, isLoading: isLoadingStatistics } = useGetAllStatistics();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   // 페이지 마운트시 검색어 초기화
   useEffect(() => {
@@ -578,28 +579,64 @@ const SearchPage = () => {
 
   return (
     <div className="flex h-screen bg-white relative w-full max-w-full overflow-hidden">
+      {/* 사이드바 토글 버튼 */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="fixed top-16 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center"
+        style={{ backgroundColor: '#2DC5F4' }}
+      >
+        {isSidebarOpen ? (
+          <X className="w-5 h-5 text-white" />
+        ) : (
+          <Menu className="w-5 h-5 text-white" />
+        )}
+      </button>
+
       {/* 왼쪽 사이드바 - 카테고리 목록 */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative">
-        {/* 타이틀 - 파란색 그라데이션 헤더 */}
+      <div 
+        className="bg-white flex flex-col overflow-hidden relative transition-all duration-300 ease-in-out"
+        style={{ 
+          width: isSidebarOpen ? '256px' : '0px',
+          marginTop: '-48px',
+          paddingTop: '48px',
+          minWidth: isSidebarOpen ? '256px' : '0px',
+          maxWidth: isSidebarOpen ? '256px' : '0px'
+        }}
+      >
         <div 
-          className="px-6 py-6 relative"
+          className="h-full transition-opacity duration-300"
           style={{
-            background: 'linear-gradient(to right, #2DC5F4, #2E77BE)',
-            clipPath: 'polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%)'
+            opacity: isSidebarOpen ? 1 : 0,
+            pointerEvents: isSidebarOpen ? 'auto' : 'none',
+            visibility: isSidebarOpen ? 'visible' : 'hidden'
           }}
         >
-          <h1 className="text-2xl font-bold text-white mb-0">패널</h1>
-          <h1 className="text-2xl font-bold text-white mb-1">인사이트</h1>
-          <p className="text-sm text-white">Panel Insights</p>
+            {/* 타이틀 - 파란색 그라데이션 헤더 */}
+        <div 
+          className="px-4 py-3 relative"
+          style={{
+            clipPath: 'polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%)',
+            minHeight: '100px',
+            paddingBottom: '30px',
+            overflow: 'visible',
+            background: '#2E77BE',
+          }}
+        >
+          {/* 텍스트 컨텐츠 */}
+          <div className="relative z-10" style={{ paddingLeft: '60px' }}>
+            <h1 className="text-xl font-bold text-white mb-0">패널</h1>
+            <h1 className="text-xl font-bold text-white mb-0.5">인사이트</h1>
+            <p className="text-xs text-white">Panel Insights</p>
+          </div>
         </div>
 
         {/* 검색/필터 섹션 */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-white">
-          <p className="text-sm font-bold text-black mb-1">
+        <div className="px-4 pt-1 pb-2 bg-white">
+          <p className="font-black text-black mb-1" style={{ fontSize: '19px' }}>
             검색어가 고민되시나요?
           </p>
-          <p className="text-sm text-gray-700 mb-3">
-            전체 데이터를 훑어보며 아이디어를 얻으세요.
+          <p className="text-sm text-gray-700 mb-2">
+            클릭 한번으로 아이디어 GET
           </p>
           <div className="relative">
             <input
@@ -614,7 +651,7 @@ const SearchPage = () => {
         </div>
 
         {/* 전체 응답자 수 */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-4 py-1">
           <div className="text-sm text-gray-600">
             전체 응답자 수: <span className="text-blue-600 font-bold text-base">
               {statisticsData?.total_users?.toLocaleString() || TOTAL_PANEL_COUNT.toLocaleString()}
@@ -623,31 +660,36 @@ const SearchPage = () => {
         </div>
 
         {/* 카테고리 목록 */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          {CATEGORIES.map((category) => {
+        <div className="flex-1 overflow-y-auto px-3 py-1">
+          {CATEGORIES.map((category, index) => {
             const chartCount = getCategoryChartCount(category.id);
             const isSelected = selectedCategory === category.id;
             
             return (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(isSelected ? null : category.id)}
-                className={`w-full px-4 py-3 mb-2 rounded-lg text-left transition-colors ${
-                  isSelected 
-                    ? 'bg-blue-100 border-2 border-blue-500' 
-                    : 'bg-white border-2 border-transparent hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{category.icon}</span>
-                  <div className="flex-1">
-                    <div className="font-semibold text-gray-800">{category.name}</div>
-                    <div className="text-xs text-gray-500">{chartCount}개 차트</div>
+              <div key={category.id}>
+                <button
+                  onClick={() => setSelectedCategory(isSelected ? null : category.id)}
+                  className={`w-full px-4 py-3 mb-2 rounded-lg text-left transition-colors ${
+                    isSelected 
+                      ? 'bg-blue-100 border-2 border-blue-500' 
+                      : 'bg-white border-2 border-transparent hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{category.icon}</span>
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-800">{category.name}</div>
+                      <div className="text-xs text-gray-500">{chartCount}개 차트</div>
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+                {index < CATEGORIES.length - 1 && (
+                  <div className="h-px bg-gray-200 mx-4 mb-2"></div>
+                )}
+              </div>
             );
           })}
+        </div>
         </div>
       </div>
 
@@ -664,12 +706,12 @@ const SearchPage = () => {
               <div className="mb-6 text-center">
                 <p className="text-lg md:text-xl text-gray-700">
                   검색하고 싶은 데이터를{" "}
-                  <span className="font-medium" style={{ color: '#2DC2F2' }}>자연어로</span> 입력하세요
+                  <span className="font-black" style={{ color: '#2DC2F2', fontWeight: 950, letterSpacing: '-0.02em' }}>자연어로</span> 입력하세요
                 </p>
               </div>
 
               {/* 검색 입력 필드 */}
-              <div className="relative mb-6">
+              <div className="relative mb-6 max-w-2xl mx-auto">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#2DC2F2' }} />
                 <input
                   type="text"
@@ -725,10 +767,13 @@ const SearchPage = () => {
                     setQuery(suggestion);
                     handleSearch(suggestion);
                   }}
-                  className="px-4 py-2 text-sm border rounded-lg transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
                   style={{ 
                     color: '#2DC2F2',
+                    borderRadius: '100px',
                     borderColor: '#2DC2F2',
+                    fontWeight: 950,
+                    letterSpacing: '-0.02em'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'rgba(45, 194, 242, 0.1)';
@@ -745,10 +790,13 @@ const SearchPage = () => {
                     setQuery(suggestion);
                     handleSearch(suggestion);
                   }}
-                  className="px-4 py-2 text-sm border rounded-lg transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
                   style={{ 
                     color: '#2DC2F2',
+                    borderRadius: '100px',
                     borderColor: '#2DC2F2',
+                    fontWeight: 950,
+                    letterSpacing: '-0.02em'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'rgba(45, 194, 242, 0.1)';
@@ -763,10 +811,10 @@ const SearchPage = () => {
             </div>
 
             {/* 차트 영역 */}
-            <div className="p-6 bg-gray-50">
+            <div className="p-6 bg-white">
               {isLoadingStatistics ? (
                 <div className="flex items-center justify-center py-20">
-                  <div className="text-gray-500">데이터를 불러오는 중...</div>
+                  <div className="font-bold text-black">데이터를 불러오는 중...</div>
                 </div>
               ) : statisticsData ? (
                 <StatisticsCharts 
@@ -775,7 +823,7 @@ const SearchPage = () => {
                   categoryFilter={categoryFilter}
                 />
               ) : (
-                <div className="text-center py-20 text-gray-500">데이터가 없습니다.</div>
+                <div className="text-center py-20 font-bold text-black">데이터가 없습니다.</div>
               )}
             </div>
           </div>
