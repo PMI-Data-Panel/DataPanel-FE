@@ -1,12 +1,8 @@
-import SearchForm from "../components/SearchPage/SearchForm";
-import Sidebar from "../components/SearchPage/Sidebar";
-import MobileSidebar from "../components/SearchPage/MobileSidebar";
 import { useSearch } from "../hooks/useSearch";
 import usePostSearch from "../hooks/queries/usePostSearch";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import Loading from "../components/SearchPage/Loading";
-import SearchKeywords from "../components/SearchPage/SearchKeywords";
 import AreaChart from "../components/common/graph/AreaChart";
 import BarChart from "../components/common/graph/BarChart";
 import PieChart from "../components/common/graph/PieChart";
@@ -15,13 +11,37 @@ import { TOTAL_PANEL_COUNT } from "../constants/number";
 import { useGetAllStatistics } from "../hooks/queries/useGetVisualization";
 import type { AllStatisticsResponse, Distribution } from "../types/search";
 import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
 
-// 예시 검색 키워드
-const example1 = "서울에 사는 ott 구독자";
-const example2 = "술담배 좋아하는 30대";
+
+// 카테고리 타입 정의
+type CategoryType = 'demographics' | 'region' | 'education' | 'income' | 'lifestyle' | 'consumption';
+
+interface Category {
+  id: CategoryType;
+  name: string;
+  icon: string;
+}
+
+const CATEGORIES: Category[] = [
+  { id: 'demographics', name: '인구통계', icon: '👥' },
+  { id: 'region', name: '지역정보', icon: '📍' },
+  { id: 'education', name: '교육/직업', icon: '🎓' },
+  { id: 'income', name: '소득', icon: '💰' },
+  { id: 'lifestyle', name: '생활패턴', icon: '🚬' },
+  { id: 'consumption', name: '소비/보유', icon: '🛒' },
+];
 
 // StatisticsCharts 컴포넌트
-const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
+const StatisticsCharts = ({ 
+  data, 
+  selectedCategory,
+  categoryFilter 
+}: { 
+  data: AllStatisticsResponse;
+  selectedCategory: CategoryType | null;
+  categoryFilter: string;
+}) => {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   // 데이터를 Distribution 형식으로 변환
@@ -42,8 +62,8 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
       label = label.replace(/\s+/g, ' ').trim();
       return {
         label,
-        value: item.count,
-        percentage: item.percentage,
+      value: item.count,
+      percentage: item.percentage,
       };
     });
 
@@ -79,113 +99,56 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
       .sort((a, b) => b.value - a.value); // 값 기준 내림차순 정렬
   };
 
-  // 차트 타입 결정 및 그룹화
-  const chartGroups = useMemo(() => {
-    const groups: Array<{
-      charts: Array<{
+
+  // 차트를 카테고리별로 분류
+  const categorizedCharts = useMemo(() => {
+    type ChartItem = {
         key: string;
         title: string;
         data: Distribution[];
         type: 'pie' | 'bar' | 'treemap' | 'area';
         colors?: string[];
-      }>;
-      cols: number; // 그리드 컬럼 수 (1, 2, 3)
-    }> = [];
+    };
+
+    type ChartGroup = {
+      charts: ChartItem[];
+      cols: number;
+    };
+
+    const categories: Record<CategoryType, ChartItem[]> = {
+      demographics: [],
+      region: [],
+      education: [],
+      income: [],
+      lifestyle: [],
+      consumption: [],
+    };
 
     const statistics = data.statistics;
     const keys = Object.keys(statistics);
-    
-    // 파이차트와 다른 차트를 분리
-    const pieCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'pie';
-      colors?: string[];
-    }> = [];
-    
-    // BarChart는 한 줄에 하나씩 배치
-    const barCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    // 자녀수와 가족수는 한 줄에 두 개씩 배치
-    const familyBarCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    // 직업과 직무는 한 줄에 두 개씩 배치 (스크롤 가능)
-    const jobBarCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    // 보유 가전제품, 보유 휴대폰 브랜드, 보유 휴대폰 모델, 자동차 제조사는 한 줄에 두 개씩 배치 (스크롤 가능)
-    const productBarCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    // 지역과 세부 지역은 한 줄에 두 개씩 배치 (스크롤 가능)
-    const regionBarCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    // 흡연경험과 최종학력은 한 줄에 두 개씩 배치
-    const educationSmokerBarCharts: Array<{
-      key: string;
-      title: string;
-      data: Distribution[];
-      type: 'bar';
-      colors?: string[];
-    }> = [];
-    
-    let currentGroup: typeof groups[0]['charts'] = [];
-    let currentCols = 3;
 
     keys.forEach((key) => {
       const stat = statistics[key];
-      // 출생년도는 숫자 오름차순으로 정렬
       const distribution = convertToDistribution(stat.answer_distribution, key === 'q_birth_year');
       const answerCount = distribution.length;
+      const desc = stat.question_description;
 
       // 차트 타입 결정
       let chartType: 'pie' | 'bar' | 'treemap' | 'area' = 'pie';
       let colors: string[] | undefined;
 
-      // 특정 필드에 맞는 차트 타입 지정
       if (key === 'q_region' || key === 'q_sub_region') {
-        chartType = 'bar'; // 지역과 세부 지역은 BarChart로 변경 (스크롤 가능)
-      } else if (stat.question_description.includes('흡연경험') || stat.question_description.includes('최종학력')) {
-        chartType = 'bar'; // 흡연경험과 최종학력은 BarChart로 변경
+        chartType = 'bar';
+      } else if (desc.includes('흡연경험') || desc.includes('최종학력')) {
+        chartType = 'bar';
       } else if (key === 'q_personal_income' || key === 'q_household_income' || key === 'q_birth_year') {
         chartType = 'area';
         colors = ['#3b82f6'];
       } else if (key === 'q_age' || key === 'q_family_count' || key === 'q_children_count') {
         chartType = 'bar';
       } else if (answerCount > 10) {
-        // 답변 개수가 많으면 BarChart
         chartType = 'bar';
       } else if (answerCount <= 3) {
-        // 답변이 적으면 PieChart
         chartType = 'pie';
         if (key === 'q_gender') {
           colors = ['#3b82f6', '#ec4899', '#8b5cf6'];
@@ -198,175 +161,156 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
         chartType = 'pie';
       }
 
-      // 지역과 세부 지역은 별도로 수집 (한 줄에 두 개씩)
-      if (key === 'q_region' || key === 'q_sub_region') {
-        regionBarCharts.push({
-          key,
-          title: stat.question_description,
-          data: distribution,
-          type: 'bar' as const,
-          colors,
-        });
-      } else if (key === 'q_birth_year' || key === 'q_personal_income' || key === 'q_household_income') {
-        // 출생년도, 소득은 별도 그룹으로 (전체 너비)
-        if (currentGroup.length > 0) {
-          groups.push({ charts: currentGroup, cols: currentCols });
-          currentGroup = [];
-        }
-        groups.push({
-          charts: [{
-            key,
-            title: stat.question_description,
+      const chartItem: ChartItem = {
+        key,
+        title: desc,
             data: distribution,
             type: chartType,
             colors,
-          }],
-          cols: 1,
-        });
-        currentCols = 3;
-      } else if (chartType === 'pie') {
-        // 파이차트는 별도로 수집
-        pieCharts.push({
-          key,
-          title: stat.question_description,
-          data: distribution,
-          type: 'pie',
-          colors,
-        });
-      } else if (chartType === 'bar') {
-        // 자녀수와 가족수는 별도로 수집 (한 줄에 두 개씩)
-        if (key === 'q_family_count' || key === 'q_children_count') {
-          familyBarCharts.push({
-            key,
-            title: stat.question_description,
-            data: distribution,
-            type: 'bar',
-            colors,
-          });
-        } else if (stat.question_description.includes('직업') || stat.question_description.includes('직무')) {
-          // 직업과 직무는 별도로 수집 (한 줄에 두 개씩, 스크롤 가능)
-          jobBarCharts.push({
-            key,
-            title: stat.question_description,
-            data: distribution,
-            type: 'bar',
-            colors,
-          });
-        } else if (stat.question_description.includes('흡연경험') || stat.question_description.includes('최종학력')) {
-          // 흡연경험과 최종학력은 별도로 수집 (한 줄에 두 개씩)
-          educationSmokerBarCharts.push({
-            key,
-            title: stat.question_description,
-            data: distribution,
-            type: 'bar',
-            colors,
-          });
-        } else if (
-          stat.question_description.includes('가전제품') || 
-          stat.question_description.includes('보유 휴대폰 브랜드') || 
-          stat.question_description.includes('보유 휴대폰 모델') || 
-          stat.question_description.includes('자동차 제조사') ||
-          stat.question_description.includes('자동차 모델') ||
-          stat.question_description.includes('담배브랜드') ||
-          stat.question_description.includes('음용경험') ||
-          stat.question_description.includes('술')
-        ) {
-          // 보유 가전제품, 보유 휴대폰 브랜드, 보유 휴대폰 모델, 자동차 제조사, 자동차 모델, 담배브랜드, 음용경험 술은 별도로 수집 (한 줄에 두 개씩, 스크롤 가능)
-          productBarCharts.push({
-            key,
-            title: stat.question_description,
-            data: distribution,
-            type: 'bar',
-            colors,
-          });
-        } else {
-          // 나머지 BarChart는 한 줄에 하나씩
-          barCharts.push({
-            key,
-            title: stat.question_description,
-            data: distribution,
-            type: 'bar',
-            colors,
-          });
-        }
-      } else {
-        // 다른 차트들 (area 등)
-        currentGroup.push({
-          key,
-          title: stat.question_description,
-          data: distribution,
-          type: chartType,
-          colors,
-        });
+      };
 
-        // 3개씩 그룹화
-        if (currentGroup.length >= 3) {
-          groups.push({ charts: currentGroup, cols: 3 });
-          currentGroup = [];
-        }
+      // 카테고리 분류
+      if (key === 'q_gender' || key === 'q_age' || key === 'q_birth_year' || 
+          key === 'q_marriage' || key === 'q_family_count' || key === 'q_children_count') {
+        categories.demographics.push(chartItem);
+      } else if (key === 'q_region' || key === 'q_sub_region') {
+        categories.region.push(chartItem);
+      } else if (desc.includes('최종학력') || desc.includes('직업') || desc.includes('직무')) {
+        categories.education.push(chartItem);
+      } else if (key === 'q_personal_income' || key === 'q_household_income') {
+        categories.income.push(chartItem);
+      } else if (desc.includes('흡연경험') || desc.includes('음용경험') || desc.includes('술') || desc.includes('담배브랜드')) {
+        categories.lifestyle.push(chartItem);
+      } else if (desc.includes('가전제품') || desc.includes('보유 휴대폰') || 
+                 desc.includes('자동차') || key === 'q_car_owned') {
+        categories.consumption.push(chartItem);
+      } else {
+        // 기본적으로 인구통계에 포함
+        categories.demographics.push(chartItem);
       }
     });
 
-    // 지역과 세부 지역을 한 줄에 두 개씩 추가
-    if (regionBarCharts.length > 0) {
-      groups.push({
-        charts: regionBarCharts,
-        cols: 2,
-      });
-    }
+    // 각 카테고리의 차트들을 그룹화
+    const categoryGroups: Record<CategoryType, ChartGroup[]> = {
+      demographics: [],
+      region: [],
+      education: [],
+      income: [],
+      lifestyle: [],
+      consumption: [],
+    };
 
-    // 자녀수와 가족수를 한 줄에 두 개씩 추가
-    if (familyBarCharts.length > 0) {
-      groups.push({
-        charts: familyBarCharts,
-        cols: 2,
-      });
-    }
-
-    // 직업과 직무를 한 줄에 두 개씩 추가
-    if (jobBarCharts.length > 0) {
-      groups.push({
-        charts: jobBarCharts,
-        cols: 2,
-      });
-    }
-
-    // 보유 가전제품, 보유 휴대폰 브랜드, 보유 휴대폰 모델, 자동차 제조사를 한 줄에 두 개씩 추가
-    if (productBarCharts.length > 0) {
-      groups.push({
-        charts: productBarCharts,
-        cols: 2,
-      });
-    }
-
-    // 나머지 BarChart를 한 줄에 하나씩 추가
-    barCharts.forEach((barChart) => {
-      groups.push({
-        charts: [barChart],
-        cols: 1,
-      });
+    // 카테고리별 그룹화 로직
+    Object.keys(categories).forEach((catKey) => {
+      const category = catKey as CategoryType;
+      const charts = categories[category];
+      
+      // 지역: 2개씩 묶기
+      if (category === 'region') {
+        if (charts.length > 0) {
+          categoryGroups[category].push({ charts, cols: 2 });
+        }
+      }
+      // 교육/직업: 직업/직무는 2개씩, 최종학력은 별도
+      else if (category === 'education') {
+        const jobCharts = charts.filter(c => c.title.includes('직업') || c.title.includes('직무'));
+        const educationCharts = charts.filter(c => c.title.includes('최종학력'));
+        
+        if (jobCharts.length > 0) {
+          categoryGroups[category].push({ charts: jobCharts, cols: 2 });
+        }
+        educationCharts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+      }
+      // 소득: 각각 1개씩
+      else if (category === 'income') {
+        charts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+      }
+      // 생활패턴: 흡연경험과 기타를 분리
+      else if (category === 'lifestyle') {
+        const smokerCharts = charts.filter(c => c.title.includes('흡연경험'));
+        const otherCharts = charts.filter(c => !c.title.includes('흡연경험'));
+        
+        if (smokerCharts.length > 0) {
+          categoryGroups[category].push({ charts: smokerCharts, cols: 1 });
+        }
+        otherCharts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+      }
+      // 소비/보유: 가족수/자녀수는 2개씩, 나머지는 1개씩
+      else if (category === 'consumption') {
+        const familyCharts = charts.filter(c => c.title.includes('가족수') || c.title.includes('자녀수'));
+        const otherCharts = charts.filter(c => !c.title.includes('가족수') && !c.title.includes('자녀수'));
+        
+        if (familyCharts.length > 0) {
+          categoryGroups[category].push({ charts: familyCharts, cols: 2 });
+        }
+        // 제품 관련 차트들을 2개씩 묶기
+        const productCharts = otherCharts.filter(c => 
+          c.title.includes('가전제품') || 
+          c.title.includes('보유 휴대폰') || 
+          c.title.includes('자동차')
+        );
+        const restCharts = otherCharts.filter(c => 
+          !c.title.includes('가전제품') && 
+          !c.title.includes('보유 휴대폰') && 
+          !c.title.includes('자동차')
+        );
+        
+        if (productCharts.length > 0) {
+          for (let i = 0; i < productCharts.length; i += 2) {
+            categoryGroups[category].push({ 
+              charts: productCharts.slice(i, i + 2), 
+              cols: 2 
+            });
+          }
+        }
+        restCharts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+      }
+      // 인구통계: 파이차트는 2개씩, 나머지는 1개씩
+      else {
+        const pieCharts = charts.filter(c => c.type === 'pie');
+        const barCharts = charts.filter(c => c.type === 'bar');
+        const areaCharts = charts.filter(c => c.type === 'area');
+        
+        // 파이차트 2개씩 묶기
+    for (let i = 0; i < pieCharts.length; i += 2) {
+          categoryGroups[category].push({ 
+            charts: pieCharts.slice(i, i + 2), 
+            cols: 2 
+          });
+        }
+        
+        // 가족수/자녀수는 2개씩
+        const familyCharts = barCharts.filter(c => 
+          c.title.includes('가족수') || c.title.includes('자녀수')
+        );
+        const otherBarCharts = barCharts.filter(c => 
+          !c.title.includes('가족수') && !c.title.includes('자녀수')
+        );
+        
+        if (familyCharts.length > 0) {
+          categoryGroups[category].push({ charts: familyCharts, cols: 2 });
+        }
+        
+        otherBarCharts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+        
+        // Area 차트는 각각 1개씩
+        areaCharts.forEach(chart => {
+          categoryGroups[category].push({ charts: [chart], cols: 1 });
+        });
+      }
     });
 
-    // 흡연경험과 최종학력을 한 줄에 두 개씩 추가 (맨 아래)
-    if (educationSmokerBarCharts.length > 0) {
-      groups.push({
-        charts: educationSmokerBarCharts,
-        cols: 2,
-      });
-    }
-
-    // 파이차트를 2개씩 묶어서 그룹에 추가
-    for (let i = 0; i < pieCharts.length; i += 2) {
-      const pieGroup = pieCharts.slice(i, i + 2);
-      groups.push({ charts: pieGroup, cols: 2 });
-    }
-
-    // 남은 다른 차트들 추가
-    if (currentGroup.length > 0) {
-      groups.push({ charts: currentGroup, cols: currentGroup.length === 2 ? 2 : 3 });
-    }
-
-    return groups;
+    return categoryGroups;
   }, [data]);
 
   // 지역 차트 클릭 핸들러
@@ -382,8 +326,109 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
   // 선택된 지역이 있으면 세부 지역 차트 표시
   const filteredSubRegionData = selectedRegion ? getFilteredSubRegionData() : [];
 
+  // 차트 렌더링 헬퍼 함수
+  const renderChart = (chart: {
+    key: string;
+    title: string;
+    data: Distribution[];
+    type: 'pie' | 'bar' | 'treemap' | 'area';
+    colors?: string[];
+  }) => {
+    return (
+      <div key={chart.key} className="group relative">
+        <div className="relative bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+          <div className="absolute top-3 right-3 z-10">
+            <div className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100">
+              <span className="text-xs font-medium text-gray-600">데이터</span>
+            </div>
+          </div>
+          
+          <div className="relative">
+            {chart.type === 'pie' && (
+              <PieChart
+                data={chart.data}
+                title={chart.title}
+                colors={chart.colors}
+              />
+            )}
+            {chart.type === 'bar' && (
+              <BarChart
+                data={chart.data}
+                title={chart.title}
+                onBarClick={chart.key === 'q_region' ? handleRegionClick : undefined}
+                scrollable={
+                  chart.title.includes('직업') || 
+                  chart.title.includes('직무') ||
+                  chart.title.includes('가전제품') ||
+                  chart.title.includes('보유 휴대폰 브랜드') ||
+                  chart.title.includes('보유 휴대폰 모델') ||
+                  chart.title.includes('자동차 제조사') ||
+                  chart.title.includes('자동차 모델') ||
+                  chart.title.includes('담배브랜드') ||
+                  chart.title.includes('흡연경험') ||
+                  chart.title.includes('음용경험') ||
+                  chart.title.includes('술') ||
+                  chart.title.includes('지역') ||
+                  chart.key === 'q_region' ||
+                  chart.key === 'q_sub_region'
+                }
+              />
+            )}
+            {chart.type === 'treemap' && (
+              <TreeMap
+                data={chart.data}
+                title={chart.title}
+                onItemClick={chart.key === 'q_region' ? handleRegionClick : undefined}
+              />
+            )}
+            {chart.type === 'area' && (
+              <AreaChart
+                data={chart.data}
+                title={chart.title}
+                color={chart.colors?.[0] || '#3b82f6'}
+              />
+            )}
+          </div>
+          
+          <div className="px-4 pb-4 pt-2 border-t border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-xs text-gray-500">실시간 데이터</span>
+              </div>
+              <div className="text-xs text-gray-400">
+                {chart.data.length}개 항목
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 필터링된 차트 그룹 가져오기
+  const getFilteredGroups = () => {
+    if (!selectedCategory) return [];
+    
+    let groups = categorizedCharts[selectedCategory];
+    
+    // 필터 적용
+    if (categoryFilter.trim()) {
+      groups = groups.map(group => ({
+        ...group,
+        charts: group.charts.filter(chart => 
+          chart.title.toLowerCase().includes(categoryFilter.toLowerCase())
+        )
+      })).filter(group => group.charts.length > 0);
+    }
+    
+    return groups;
+  };
+
+  const filteredGroups = getFilteredGroups();
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {selectedRegion && filteredSubRegionData.length > 0 && (
         <div className="grid grid-cols-1 gap-4 md:gap-5">
           <div className="bg-white rounded-xl shadow-md p-4 md:p-6 border border-gray-200">
@@ -409,7 +454,9 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
         </div>
       )}
 
-      {chartGroups.map((group, groupIndex) => (
+      {/* 선택된 카테고리의 차트들 */}
+      {selectedCategory && filteredGroups.length > 0 ? (
+        filteredGroups.map((group, groupIndex) => (
         <div
           key={groupIndex}
           className={`grid gap-6 md:gap-8 ${
@@ -420,85 +467,18 @@ const StatisticsCharts = ({ data }: { data: AllStatisticsResponse }) => {
               : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           }`}
         >
-          {group.charts.map((chart) => (
-            <div
-              key={chart.key}
-              className="group relative"
-            >
-              {/* 상품 카드 스타일 래퍼 */}
-              <div className="relative bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-                {/* 상단 배지 영역 (선택적) */}
-                <div className="absolute top-3 right-3 z-10">
-                  <div className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100">
-                    <span className="text-xs font-medium text-gray-600">데이터</span>
+            {group.charts.map(renderChart)}
                   </div>
+        ))
+      ) : selectedCategory ? (
+        <div className="text-center py-20 text-gray-500">
+          {categoryFilter.trim() ? '필터 조건에 맞는 차트가 없습니다.' : '차트가 없습니다.'}
                 </div>
-                
-                {/* 차트 컨텐츠 */}
-                <div className="relative">
-                  {chart.type === 'pie' && (
-                    <PieChart
-                      data={chart.data}
-                      title={chart.title}
-                      colors={chart.colors}
-                    />
-                  )}
-                  {chart.type === 'bar' && (
-                    <BarChart
-                      data={chart.data}
-                      title={chart.title}
-                      onBarClick={chart.key === 'q_region' ? handleRegionClick : undefined}
-                      scrollable={
-                        chart.title.includes('직업') || 
-                        chart.title.includes('직무') ||
-                        chart.title.includes('가전제품') ||
-                        chart.title.includes('보유 휴대폰 브랜드') ||
-                        chart.title.includes('보유 휴대폰 모델') ||
-                        chart.title.includes('자동차 제조사') ||
-                        chart.title.includes('자동차 모델') ||
-                        chart.title.includes('담배브랜드') ||
-                        chart.title.includes('흡연경험') ||
-                        chart.title.includes('음용경험') ||
-                        chart.title.includes('술') ||
-                        chart.title.includes('지역') ||
-                        chart.key === 'q_region' ||
-                        chart.key === 'q_sub_region'
-                      }
-                    />
-                  )}
-                  {chart.type === 'treemap' && (
-                    <TreeMap
-                      data={chart.data}
-                      title={chart.title}
-                      onItemClick={chart.key === 'q_region' ? handleRegionClick : undefined}
-                    />
-                  )}
-                  {chart.type === 'area' && (
-                    <AreaChart
-                      data={chart.data}
-                      title={chart.title}
-                      color={chart.colors?.[0] || '#3b82f6'}
-                    />
-                  )}
-                </div>
-                
-                {/* 하단 정보 바 */}
-                <div className="px-4 pb-4 pt-2 border-t border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-                      <span className="text-xs text-gray-500">실시간 데이터</span>
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {chart.data.length}개 항목
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+      ) : (
+        <div className="text-center py-20 text-gray-500">
+          왼쪽에서 카테고리를 선택해주세요.
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -509,6 +489,8 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const isInitialized = useRef(false);
   const { data: statisticsData, isLoading: isLoadingStatistics } = useGetAllStatistics();
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
 
   // 페이지 마운트시 검색어 초기화
   useEffect(() => {
@@ -552,80 +534,168 @@ const SearchPage = () => {
     mutate(requestBody);
   };
 
+  // 카테고리별 차트 개수 계산
+  const getCategoryChartCount = useMemo(() => {
+    if (!statisticsData) return () => 0;
+    
+    const counts: Record<CategoryType, number> = {
+      demographics: 0,
+      region: 0,
+      education: 0,
+      income: 0,
+      lifestyle: 0,
+      consumption: 0,
+    };
+
+    const statistics = statisticsData.statistics;
+    const keys = Object.keys(statistics);
+
+    keys.forEach((key) => {
+      const stat = statistics[key];
+      const desc = stat.question_description;
+
+      if (key === 'q_gender' || key === 'q_age' || key === 'q_birth_year' || 
+          key === 'q_marriage' || key === 'q_family_count' || key === 'q_children_count') {
+        counts.demographics++;
+      } else if (key === 'q_region' || key === 'q_sub_region') {
+        counts.region++;
+      } else if (desc.includes('최종학력') || desc.includes('직업') || desc.includes('직무')) {
+        counts.education++;
+      } else if (key === 'q_personal_income' || key === 'q_household_income') {
+        counts.income++;
+      } else if (desc.includes('흡연경험') || desc.includes('음용경험') || desc.includes('술') || desc.includes('담배브랜드')) {
+        counts.lifestyle++;
+      } else if (desc.includes('가전제품') || desc.includes('보유 휴대폰') || 
+                 desc.includes('자동차') || key === 'q_car_owned') {
+        counts.consumption++;
+      } else {
+        counts.demographics++;
+      }
+    });
+
+    return (categoryId: CategoryType) => counts[categoryId];
+  }, [statisticsData]);
+
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 relative w-full max-w-full overflow-hidden">
-      {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
-      <div className="hidden md:block">
-        <Sidebar open={true} />
+    <div className="flex h-screen bg-white relative w-full max-w-full overflow-hidden">
+      {/* 왼쪽 사이드바 - 카테고리 목록 */}
+      <div className="w-80 bg-gradient-to-b from-blue-50 to-white border-r border-gray-200 flex flex-col overflow-hidden">
+        {/* 타이틀 */}
+        <div className="px-6 py-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">패널 인사이트</h1>
+          <p className="text-sm text-gray-500">Panel Insights</p>
+        </div>
+
+        {/* 검색/필터 섹션 */}
+        <div className="px-6 py-4 border-b border-gray-200">
+          <p className="text-sm text-gray-600 mb-3">
+            검색어가 고민되시나요? 전체 데이터를 훑어보며 아이디어를 얻으세요.
+          </p>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Filter"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-full px-4 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          </div>
+        </div>
+
+        {/* 전체 응답자 수 */}
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="text-sm text-gray-600">
+            전체 응답자 수: <span className="text-blue-600 font-bold text-base">
+              {statisticsData?.total_users?.toLocaleString() || TOTAL_PANEL_COUNT.toLocaleString()}
+            </span> 명
+          </div>
+        </div>
+
+        {/* 카테고리 목록 */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {CATEGORIES.map((category) => {
+            const chartCount = getCategoryChartCount(category.id);
+            const isSelected = selectedCategory === category.id;
+            
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(isSelected ? null : category.id)}
+                className={`w-full px-4 py-3 mb-2 rounded-lg text-left transition-colors ${
+                  isSelected 
+                    ? 'bg-blue-100 border-2 border-blue-500' 
+                    : 'bg-white border-2 border-transparent hover:bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{category.icon}</span>
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-800">{category.name}</div>
+                    <div className="text-xs text-gray-500">{chartCount}개 차트</div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
+      {/* 오른쪽 메인 콘텐츠 */}
+      <div className="flex-1 flex flex-col overflow-hidden">
       {/* 검색중이라면 로딩화면 */}
       {isPending ? (
         <Loading />
       ) : (
-        // 검색 메인화면 - 스크롤 가능하도록 변경
-        <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
-          {/* 상단 검색 영역 */}
-          <div className="flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-10 pt-4 md:pt-6 pb-8 md:pb-10 bg-gradient-to-b from-transparent to-white/50 backdrop-blur-sm">
-            {/* 검색 메인창 타이틀 */}
-            <div className="text-base md:text-lg font-medium text-gray-900 mb-4 md:mb-6 text-center">
-              검색하고 싶은 데이터를 자연어로 입력하세요
-            </div>
-
-            {/* 검색 폼 */}
-            <div className="w-full max-w-2xl">
-              <SearchForm
-                searchQuery={query}
-                setSearchQuery={setQuery}
-                onSearch={handleSearch}
-                isSearching={isPending}
-              />
-            </div>
-
-            {/* 예시 검색 키워드 */}
-            <div className="mt-3 flex justify-center gap-3">
-              <SearchKeywords
-                placeholder={example1}
-                setKeyword={() => setQuery(example1)}
-              />
-              <SearchKeywords
-                placeholder={example2}
-                setKeyword={() => setQuery(example2)}
-              />
-            </div>
-
-            {/* 모바일 사이드바 (검색 히스토리) */}
-            <MobileSidebar />
-          </div>
-
-          {/* 전체 패널 데이터 영역 */}
-          <div className="w-full max-w-full bg-gray-50/50">
-            {/* 섹션 헤더 */}
-            <div className="bg-white border-b border-gray-200 py-4 md:py-5 px-4 md:px-6 shadow-sm">
-              <div className="max-w-7xl mx-auto">
-                <div className="text-sm md:text-base text-gray-600">
-                  전체 응답자 수: <span className="text-blue-600 font-bold text-lg md:text-xl">
-                    {statisticsData?.total_users?.toLocaleString() || TOTAL_PANEL_COUNT.toLocaleString()}
-                  </span> 명
-                </div>
+          <div className="flex-1 overflow-y-auto">
+            {/* 검색 바 섹션 */}
+            <div className="bg-white border-b border-gray-200 px-6 py-6">
+              <div className="text-sm text-gray-500 mb-2">Search bar</div>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && query.trim()) {
+                      handleSearch(query);
+                    }
+                  }}
+                  placeholder="어떤 패널을 추출해드릴까요?"
+                  className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+                <button
+                  onClick={() => query.trim() && handleSearch(query)}
+                  disabled={!query.trim() || isPending}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
               </div>
             </div>
 
-            {/* 차트 그리드 컨테이너 */}
-            <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
+            {/* 차트 영역 */}
+            <div className="p-6">
               {isLoadingStatistics ? (
                 <div className="flex items-center justify-center py-20">
                   <div className="text-gray-500">데이터를 불러오는 중...</div>
                 </div>
               ) : statisticsData ? (
-                <StatisticsCharts data={statisticsData} />
+                <StatisticsCharts 
+                  data={statisticsData} 
+                  selectedCategory={selectedCategory}
+                  categoryFilter={categoryFilter}
+                />
               ) : (
                 <div className="text-center py-20 text-gray-500">데이터가 없습니다.</div>
               )}
             </div>
           </div>
+        )}
         </div>
-      )}
     </div>
   );
 };

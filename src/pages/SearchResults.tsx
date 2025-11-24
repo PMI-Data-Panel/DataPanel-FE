@@ -22,7 +22,6 @@ import {
 import BarChart from "../components/common/graph/BarChart";
 import GenderChart from "../components/common/graph/GenderChart";
 import TreeMapComponent from "../components/common/graph/TreeMap";
-import PieChartComponent from "../components/common/graph/PieChart";
 
 const SearchResults = () => {
   const { query, searchResults: data } = useSearch();
@@ -309,10 +308,10 @@ const SearchResults = () => {
 
                 {/* 패널 분포 */}
                 {panelData.length > 0 && (
-                  <PieChartComponent
+                  <BarChart
                     data={panelData}
                     title="패널 분포"
-                    onItemClick={handlePanelClick}
+                    onBarClick={handlePanelClick}
                   />
                 )}
               </div>
