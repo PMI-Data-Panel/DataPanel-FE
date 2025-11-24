@@ -25,7 +25,12 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex items-center px-3 md:px-6 py-2.5 bg-black text-white w-full max-w-full overflow-x-hidden">
+    <div 
+      className="flex items-center px-3 md:px-6 py-2.5 text-white w-full max-w-full overflow-x-hidden"
+      style={{
+        background: 'linear-gradient(to right, #2DC5F4, #2E77BE)'
+      }}
+    >
       {/* 로고 - 왼쪽 고정 */}
       <strong
         className="cursor-pointer flex-shrink-0 mr-3 md:mr-6 lg:mr-10"

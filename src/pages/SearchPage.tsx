@@ -11,7 +11,7 @@ import { TOTAL_PANEL_COUNT } from "../constants/number";
 import { useGetAllStatistics } from "../hooks/queries/useGetVisualization";
 import type { AllStatisticsResponse, Distribution } from "../types/search";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Send } from "lucide-react";
 
 
 // 카테고리 타입 정의
@@ -579,17 +579,27 @@ const SearchPage = () => {
   return (
     <div className="flex h-screen bg-white relative w-full max-w-full overflow-hidden">
       {/* 왼쪽 사이드바 - 카테고리 목록 */}
-      <div className="w-80 bg-gradient-to-b from-blue-50 to-white border-r border-gray-200 flex flex-col overflow-hidden">
-        {/* 타이틀 */}
-        <div className="px-6 py-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">패널 인사이트</h1>
-          <p className="text-sm text-gray-500">Panel Insights</p>
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative">
+        {/* 타이틀 - 파란색 그라데이션 헤더 */}
+        <div 
+          className="px-6 py-6 relative"
+          style={{
+            background: 'linear-gradient(to right, #2DC5F4, #2E77BE)',
+            clipPath: 'polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%)'
+          }}
+        >
+          <h1 className="text-2xl font-bold text-white mb-0">패널</h1>
+          <h1 className="text-2xl font-bold text-white mb-1">인사이트</h1>
+          <p className="text-sm text-white">Panel Insights</p>
         </div>
 
         {/* 검색/필터 섹션 */}
-        <div className="px-6 py-4 border-b border-gray-200">
-          <p className="text-sm text-gray-600 mb-3">
-            검색어가 고민되시나요? 전체 데이터를 훑어보며 아이디어를 얻으세요.
+        <div className="px-6 py-4 border-b border-gray-200 bg-white">
+          <p className="text-sm font-bold text-black mb-1">
+            검색어가 고민되시나요?
+          </p>
+          <p className="text-sm text-gray-700 mb-3">
+            전체 데이터를 훑어보며 아이디어를 얻으세요.
           </p>
           <div className="relative">
             <input
@@ -647,12 +657,20 @@ const SearchPage = () => {
       {isPending ? (
         <Loading />
       ) : (
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto bg-white">
             {/* 검색 바 섹션 */}
-            <div className="bg-white border-b border-gray-200 px-6 py-6">
-              <div className="text-sm text-gray-500 mb-2">Search bar</div>
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div className="px-6 py-8 md:px-10 md:py-12">
+              {/* 상단 안내 텍스트 */}
+              <div className="mb-6 text-center">
+                <p className="text-lg md:text-xl text-gray-700">
+                  검색하고 싶은 데이터를{" "}
+                  <span className="font-medium" style={{ color: '#2DC2F2' }}>자연어로</span> 입력하세요
+                </p>
+              </div>
+
+              {/* 검색 입력 필드 */}
+              <div className="relative mb-6">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#2DC2F2' }} />
                 <input
                   type="text"
                   value={query}
@@ -663,22 +681,89 @@ const SearchPage = () => {
                     }
                   }}
                   placeholder="어떤 패널을 추출해드릴까요?"
-                  className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  className="w-full pl-12 pr-14 py-4 text-base border-2 rounded-xl focus:outline-none focus:ring-4 transition-all duration-200 bg-white"
+                  style={{
+                    borderColor: '#2DC2F2',
+                    boxShadow: '0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#2DC2F2';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(45, 194, 242, 0.1), 0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#2DC2F2';
+                    e.target.style.boxShadow = '0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)';
+                  }}
                 />
                 <button
                   onClick={() => query.trim() && handleSearch(query)}
                   disabled={!query.trim() || isPending}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white p-2 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: '#2DC2F2',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.backgroundColor = '#1ea8d9';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.backgroundColor = '#2DC2F2';
+                    }
+                  }}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* 제안 검색어 */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    const suggestion = "서울에 사는 ott 구독자";
+                    setQuery(suggestion);
+                    handleSearch(suggestion);
+                  }}
+                  className="px-4 py-2 text-sm border rounded-lg transition-colors duration-200"
+                  style={{ 
+                    color: '#2DC2F2',
+                    borderColor: '#2DC2F2',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(45, 194, 242, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  서울에 사는 ott 구독자
+                </button>
+                <button
+                  onClick={() => {
+                    const suggestion = "술담배 좋아하는 30대";
+                    setQuery(suggestion);
+                    handleSearch(suggestion);
+                  }}
+                  className="px-4 py-2 text-sm border rounded-lg transition-colors duration-200"
+                  style={{ 
+                    color: '#2DC2F2',
+                    borderColor: '#2DC2F2',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(45, 194, 242, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  술담배 좋아하는 30대
                 </button>
               </div>
             </div>
 
             {/* 차트 영역 */}
-            <div className="p-6">
+            <div className="p-6 bg-gray-50">
               {isLoadingStatistics ? (
                 <div className="flex items-center justify-center py-20">
                   <div className="text-gray-500">데이터를 불러오는 중...</div>
