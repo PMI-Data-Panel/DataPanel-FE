@@ -26,6 +26,7 @@ export interface SearchNlResults {
   score: number;
   timestamp: string;
   survey_datetime?: string;
+  panel?: string; // 패널 정보 추가
   demographic_info?: {
     age_group: string;
     gender: string;
@@ -84,58 +85,60 @@ export interface ResponseUserDetailDto {
     failed: number;
   };
   // 실제 응답 구조: hits는 배열일 수도 있고, 중첩 객체일 수도 있음
-  hits: Array<{
-    _index?: string;
-    _id: string;
-    _score: number;
-    _source: {
-      user_id: string;
-      timestamp?: string;
-      metadata: {
-        panel?: string;
-        gender?: string;
-        birth_year?: number | string;
-        age?: number;
-        age_group?: string;
-        region?: string;
-        sub_region?: string;
-        survey_datetime?: string;
-        birth_date?: string;
-      };
-      qa_pairs: Array<{
-        q_text: string;
-        answer: string | string[];
-      }>;
-    };
-  }> | {
-    total: {
-      value: number;
-      relation: string;
-    };
-    max_score: number;
-    hits: Array<{
-      _index: string;
-      _id: string;
-      _score: number;
-      _source: {
-        user_id: string;
-        timestamp?: string;
-        metadata: {
-          panel?: string;
-          gender?: string;
-          birth_year?: number | string;
-          age?: number;
-          age_group?: string;
-          region?: string;
-          sub_region?: string;
+  hits:
+    | Array<{
+        _index?: string;
+        _id: string;
+        _score: number;
+        _source: {
+          user_id: string;
+          timestamp?: string;
+          metadata: {
+            panel?: string;
+            gender?: string;
+            birth_year?: number | string;
+            age?: number;
+            age_group?: string;
+            region?: string;
+            sub_region?: string;
+            survey_datetime?: string;
+            birth_date?: string;
+          };
+          qa_pairs: Array<{
+            q_text: string;
+            answer: string | string[];
+          }>;
         };
-        qa_pairs: Array<{
-          q_text: string;
-          answer: string | string[];
+      }>
+    | {
+        total: {
+          value: number;
+          relation: string;
+        };
+        max_score: number;
+        hits: Array<{
+          _index: string;
+          _id: string;
+          _score: number;
+          _source: {
+            user_id: string;
+            timestamp?: string;
+            metadata: {
+              panel?: string;
+              gender?: string;
+              birth_year?: number | string;
+              age?: number;
+              age_group?: string;
+              region?: string;
+              sub_region?: string;
+            };
+            qa_pairs: Array<{
+              q_text: string;
+              answer: string | string[];
+            }>;
+          };
         }>;
       };
-    }>;
-  };
 }
 
 // 공통 분포 인터페이스
@@ -210,16 +213,20 @@ type Smoker = Distribution<SmokerLabel>;
 type Drinker = Distribution<DrinkerLabel>;
 
 // (POST) /search/refine/query - request
-export interface RequestSearchRefineDto {
+export interface RequestLLMRequeryDto {
   session_id: string;
   query: string;
-  max_user_ids: 10; // 고정값
-  llm_instructions: "string"; // 고정값
+  max_user_ids: number;
+  llm_instructions: string;
 }
 
 // (POST) /search/refine/query - response
-export interface ResponseSearchRefineDto {
+export interface ResponseLLMRequeryDto {
   session_id: string;
+  previous_query: string | null;
+  previous_top_user_ids: string[];
+  analyzed_user_ids: string[];
+  user_data_count: number;
   llm_analysis: {
     model: string;
     generated_at: string;
@@ -227,4 +234,24 @@ export interface ResponseSearchRefineDto {
     user_count: number;
   };
   took_ms: number;
+}
+
+// (GET) /visualization/qa/all-statistics - response
+export interface AnswerDistribution {
+  answer: string;
+  count: number;
+  percentage: number;
+}
+
+export interface QuestionStatistics {
+  question_field: string;
+  question_description: string;
+  total_responses: number;
+  answer_distribution: AnswerDistribution[];
+}
+
+export interface AllStatisticsResponse {
+  index_name: string;
+  total_users: number;
+  statistics: Record<string, QuestionStatistics>;
 }

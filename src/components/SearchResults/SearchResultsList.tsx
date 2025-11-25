@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Eye, Download } from "lucide-react";
+import { Eye, Download, User } from "lucide-react";
 import type { ResponseSearchNlDto, SearchNlResults } from "../../types/search";
 import useGetUserDetail from "../../hooks/queries/useGetUserDetail";
 import UserDetailModal from "./UserDetailModal";
@@ -104,6 +104,7 @@ const SearchResultsList = ({ data, allResults, query }: SearchResultsListProps) 
     setSelectedUserId(null);
   };
 
+
   if (!data.results || data.results.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
@@ -116,10 +117,7 @@ const SearchResultsList = ({ data, allResults, query }: SearchResultsListProps) 
     <div className="bg-white rounded-3xl shadow-sm p-6 md:p-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#191f28]">
-            검색 결과 ({data.results.length}개)
-          </h2>
-          <div className="text-sm text-[#8b95a1] mt-1">
+          <div className="text-xl md:text-2xl font-bold text-[#191f28]">
             총 {data.total_hits.toLocaleString()}명 중 {data.results.length}개 표시
           </div>
         </div>
@@ -134,95 +132,62 @@ const SearchResultsList = ({ data, allResults, query }: SearchResultsListProps) 
         )}
       </div>
 
-      <div className="space-y-4">
-        {data.results.map((result, index) => {
-          return (
-            <div
-              key={result.user_id}
-              className="border border-gray-100 rounded-2xl p-5 md:p-6 hover:shadow-md hover:border-gray-200 transition-all duration-200 bg-white"
-            >
-              {/* 기본 정보 */}
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    <span className="text-sm font-medium text-[#8b95a1] bg-[#f5f6f8] px-2.5 py-1 rounded-lg">
-                      #{index + 1}
-                    </span>
-                    <span className="text-lg md:text-xl font-bold text-[#191f28]">
-                      사용자 ID: <span className="text-[#3182f6]">{result.user_id}</span>
-                    </span>
-                    <span className="px-3 py-1.5 bg-[#e8f4fd] text-[#3182f6] rounded-xl text-xs md:text-sm font-semibold">
-                      점수: {result.score.toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* 인구통계 정보 */}
-                  {result.demographic_info && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                      <div className="bg-[#f5f6f8] rounded-xl p-3">
-                        <div className="text-xs text-[#8b95a1] mb-1">연령대</div>
-                        <div className="text-sm font-semibold text-[#191f28]">
-                          {result.demographic_info.age_group || "미정"}
-                        </div>
-                      </div>
-                      <div className="bg-[#f5f6f8] rounded-xl p-3">
-                        <div className="text-xs text-[#8b95a1] mb-1">성별</div>
-                        <div className="text-sm font-semibold text-[#191f28]">
-                          {result.demographic_info.gender || "미정"}
-                        </div>
-                      </div>
-                      <div className="bg-[#f5f6f8] rounded-xl p-3">
-                        <div className="text-xs text-[#8b95a1] mb-1">지역</div>
-                        <div className="text-sm font-semibold text-[#191f28]">
-                          {result.demographic_info.region || "미정"}
-                        </div>
-                      </div>
-                      <div className="bg-[#f5f6f8] rounded-xl p-3">
-                        <div className="text-xs text-[#8b95a1] mb-1">결혼상태</div>
-                        <div className="text-sm font-semibold text-[#191f28]">
-                          {result.demographic_info.marital_status || "미정"}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 행동 정보 */}
-                  {result.behaviors_info && (
-                    <div className="flex gap-2 mt-4 flex-wrap">
-                      <div className="bg-[#fff4e6] border border-[#ffe7ba] rounded-xl px-3 py-2">
-                        <span className="text-xs text-[#d97706] font-medium">흡연</span>
-                        <span className={`text-sm font-semibold ml-2 ${result.behaviors_info.smoker ? 'text-[#d97706]' : 'text-[#8b95a1]'}`}>
-                          {result.behaviors_info.smoker ? "예" : "아니오"}
-                        </span>
-                      </div>
-                      <div className="bg-[#f3e8ff] border border-[#e9d5ff] rounded-xl px-3 py-2">
-                        <span className="text-xs text-[#9333ea] font-medium">음주</span>
-                        <span className={`text-sm font-semibold ml-2 ${result.behaviors_info.drinker ? 'text-[#9333ea]' : 'text-[#8b95a1]'}`}>
-                          {result.behaviors_info.drinker ? "예" : "아니오"}
-                        </span>
-                      </div>
-                      <div className="bg-[#d1fae5] border border-[#a7f3d0] rounded-xl px-3 py-2">
-                        <span className="text-xs text-[#059669] font-medium">차량보유</span>
-                        <span className={`text-sm font-semibold ml-2 ${result.behaviors_info.has_vehicle ? 'text-[#059669]' : 'text-[#8b95a1]'}`}>
-                          {result.behaviors_info.has_vehicle ? "예" : "아니오"}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* 상세보기 버튼 */}
-                <button
-                  onClick={() => handleDetailClick(result.user_id)}
-                  className="ml-4 flex items-center gap-2 px-4 py-2.5 bg-[#00d084] hover:bg-[#00b875] text-white rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 shadow-sm hover:shadow-md active:scale-[0.98]"
+      {/* 테이블 형식의 사용자 목록 */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="p-4 text-left text-sm font-semibold text-[#191f28]">사용자 ID</th>
+              <th className="p-4 text-left text-sm font-semibold text-[#191f28]">연령대</th>
+              <th className="p-4 text-left text-sm font-semibold text-[#191f28]">성별</th>
+              <th className="p-4 text-left text-sm font-semibold text-[#191f28]">지역</th>
+              <th className="p-4 text-left text-sm font-semibold text-[#191f28]">작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.results.map((result) => {
+              return (
+                <tr
+                  key={result.user_id}
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                 >
-                  <Eye className="w-4 h-4" />
-                  <span className="hidden sm:inline">상세보기</span>
-                </button>
-              </div>
-            </div>
-          );
-        })}
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-[#191f28] font-medium">
+                        {result.user_id}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <span className="text-sm text-[#191f28]">
+                      {result.demographic_info?.age_group || "미정"}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span className="text-sm text-[#191f28]">
+                      {result.demographic_info?.gender || "미정"}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span className="text-sm text-[#191f28]">
+                      {result.demographic_info?.region || "미정"}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => handleDetailClick(result.user_id)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00d084] hover:bg-[#00b875] text-white rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>상세보기</span>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
       {/* 사용자 상세 정보 모달 */}

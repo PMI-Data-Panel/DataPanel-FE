@@ -225,53 +225,6 @@ const UserDetailModal = ({
                   </div>
                 </div>
               )}
-
-              {/* 검색 정보 */}
-              {userDetail && (
-                <div className="bg-gray-50 rounded-lg p-4 text-sm">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    검색 정보
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <span className="text-gray-500">매칭 점수:</span>
-                      <span className="ml-2 font-medium text-gray-900">
-                        {Array.isArray(userDetail.hits) 
-                          ? userDetail.hits[0]?._score?.toFixed(2) || "-"
-                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
-                          ? (userDetail.hits as { hits: Array<{ _score?: number }> }).hits[0]?._score?.toFixed(2) || "-"
-                          : "-"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">소요 시간:</span>
-                      <span className="ml-2 font-medium text-gray-900">
-                        {userDetail.took || "-"}ms
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">인덱스:</span>
-                      <span className="ml-2 font-medium text-gray-900">
-                        {Array.isArray(userDetail.hits)
-                          ? userDetail.hits[0]?._index || "-"
-                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
-                          ? (userDetail.hits as { hits: Array<{ _index?: string }> }).hits[0]?._index || "-"
-                          : "-"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">문서 ID:</span>
-                      <span className="ml-2 font-medium text-gray-900">
-                        {Array.isArray(userDetail.hits)
-                          ? userDetail.hits[0]?._id || "-"
-                          : typeof userDetail.hits === 'object' && 'hits' in userDetail.hits
-                          ? (userDetail.hits as { hits: Array<{ _id?: string }> }).hits[0]?._id || "-"
-                          : "-"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div className="text-center py-12">

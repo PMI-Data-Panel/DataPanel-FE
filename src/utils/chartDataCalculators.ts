@@ -131,6 +131,78 @@ export const calculateResidenceData = (
     .slice(0, 10); // 상위 10개만
 };
 
+// 패널 분포 데이터 계산
+export const calculatePanelData = (
+  data: ResponseSearchNlDto | null
+): Distribution[] => {
+  if (!data?.results || data.results.length === 0) return [];
+
+  const panelCount: Record<string, number> = {};
+  const panelOrder: string[] = []; // 순서 보존용
+  const totalCount = data.results.length;
+
+  // 디버깅: 첫 번째 결과의 구조 확인
+  if (data.results.length > 0) {
+    console.log("🔍 패널 데이터 디버깅 - 첫 번째 결과:", data.results[0]);
+    console.log("🔍 패널 필드 확인:", {
+      panel: data.results[0].panel,
+      metadata: (data.results[0] as any).metadata,
+      demographic_info: data.results[0].demographic_info,
+    });
+  }
+
+  data.results.forEach((result) => {
+    // 여러 가능한 경로에서 패널 정보 찾기
+    const panel = 
+      result.panel || 
+      (result as any).metadata?.panel ||
+      (result as any).demographic_info?.panel ||
+      (result as any).panel_name ||
+      (result as any).panel_type;
+    
+    // 패널 정보 정규화 (대소문자 통일, 공백 제거)
+    let key: string;
+    if (panel === null || panel === undefined || panel === "") {
+      key = "미정";
+    } else {
+      const normalized = String(panel).trim();
+      // 빈 문자열 체크
+      if (normalized === "") {
+        key = "미정";
+      } else {
+        key = normalized;
+      }
+    }
+
+    if (panelCount[key] === undefined) {
+      panelOrder.push(key); // 처음 나타난 순서 기록
+    }
+    panelCount[key] = (panelCount[key] || 0) + 1;
+  });
+
+  console.log("🔍 패널 분포 결과:", panelCount);
+
+  // "미정"이 있으면 마지막으로 정렬
+  const sortedOrder = panelOrder.filter(p => p !== "미정");
+  if (panelOrder.includes("미정")) {
+    sortedOrder.push("미정");
+  }
+
+  // 중복 제거 및 정렬 (값이 큰 순서대로)
+  const uniqueData = sortedOrder.map((label) => ({
+    label,
+    value: panelCount[label],
+    percentage: Number(((panelCount[label] / totalCount) * 100).toFixed(2)),
+  }));
+
+  // 값이 큰 순서대로 정렬 (미정은 마지막)
+  return uniqueData.sort((a, b) => {
+    if (a.label === "미정") return 1;
+    if (b.label === "미정") return -1;
+    return b.value - a.value;
+  });
+};
+
 // null 값이 있는지 확인용
 export const checkHasNullValues = (
   data: ResponseSearchNlDto | null
