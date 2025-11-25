@@ -13,6 +13,7 @@ export interface ResponseSearchNlDto {
   total_hits: number;
   max_score: number;
   results: SearchNlResults[];
+  session_id: string;
   took_ms: number;
   page: number;
   page_size: number;

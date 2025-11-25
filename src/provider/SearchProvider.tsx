@@ -11,11 +11,13 @@ const MAX_HISTORY_ITEMS = 20; // 최대 저장 개수
 export const SearchProvider = ({ children }: PropsWithChildren) => {
   const queryStorage = useLocalStorage(LOCAL_STORAGE_KEY.searchQuery);
   const historyStorage = useLocalStorage(LOCAL_STORAGE_KEY.searchHistory);
+  const sessionStorage = useLocalStorage(LOCAL_STORAGE_KEY.sessionId);
 
   const [query, setQueryState] = useState<string>("");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [searchResults, setSearchResults] =
     useState<ResponseSearchNlDto | null>(null);
+  const [searchSessionId, setSearchSessionid] = useState<string>("");
 
   // 초기 로드 시 localStorage에서 값 가져오기
   useEffect(() => {
@@ -65,6 +67,15 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
     });
   };
 
+  // 세션 id 추가
+  const addSearchSessionId = (sessionId: string) => {
+    if (!sessionId) return;
+
+    setSearchSessionid(sessionId);
+
+    sessionStorage.setItem(sessionId);
+  };
+
   // 검색 내역 삭제
   const removeSearchHistory = (id: string) => {
     setSearchHistory((prev) => {
@@ -86,9 +97,11 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
         query,
         searchHistory,
         searchResults,
+        searchSessionId,
         setQuery,
         setSearchResults,
         addSearchHistory,
+        addSearchSessionId,
         removeSearchHistory,
         clearSearchHistory,
       }}
