@@ -21,7 +21,6 @@ import {
 } from "../utils/chartDataCalculators";
 import BarChart from "../components/common/graph/BarChart";
 import GenderChart from "../components/common/graph/GenderChart";
-import TreeMapComponent from "../components/common/graph/TreeMap";
 import AreaChartComponent from "../components/common/graph/AreaChart";
 
 const SearchResults = () => {
@@ -45,7 +44,9 @@ const SearchResults = () => {
   // 거주지 모달 상태
   const [isResidenceModalOpen, setIsResidenceModalOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-  const [selectedRegionPanels, setSelectedRegionPanels] = useState<SearchNlResults[]>([]);
+  const [selectedRegionPanels, setSelectedRegionPanels] = useState<
+    SearchNlResults[]
+  >([]);
 
   // 그래프 데이터 계산
   const genderData = useMemo(() => calculateGenderData(data), [data]);
@@ -57,11 +58,11 @@ const SearchResults = () => {
   // 선택된 지역의 거주지 데이터 계산
   const selectedRegionResidenceData = useMemo(() => {
     if (!selectedRegion || !data?.results) return [];
-    
+
     const filteredResults = data.results.filter(
       (panel) => panel.demographic_info?.region === selectedRegion
     );
-    
+
     if (filteredResults.length === 0) return [];
 
     const residenceCount: Record<string, number> = {};
@@ -121,15 +122,17 @@ const SearchResults = () => {
     if (!data?.results) return;
     // 해당 패널의 패널 필터링
     const filtered = data.results.filter((panel) => {
-      const panelValue = 
-        panel.panel || 
+      const panelValue =
+        panel.panel ||
         (panel as { metadata?: { panel?: string } }).metadata?.panel ||
-        (panel as { demographic_info?: { panel?: string } }).demographic_info?.panel ||
+        (panel as { demographic_info?: { panel?: string } }).demographic_info
+          ?.panel ||
         (panel as { panel_name?: string }).panel_name ||
         (panel as { panel_type?: string }).panel_type;
-      const normalizedPanel = panelValue === null || panelValue === undefined || panelValue === ""
-        ? "미정"
-        : String(panelValue).trim();
+      const normalizedPanel =
+        panelValue === null || panelValue === undefined || panelValue === ""
+          ? "미정"
+          : String(panelValue).trim();
       return normalizedPanel === clickedData.label;
     });
     setFilteredPanels(filtered);
@@ -137,15 +140,16 @@ const SearchResults = () => {
     setIsModalOpen(true);
   };
 
-
-
   // 클라이언트 사이드 페이징 처리
   const handlePageChange = (newPage: number) => {
     if (!data || isPending) return;
     setCurrentPage(newPage);
     // 검색 결과 리스트로 스크롤
     setTimeout(() => {
-      resultsListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultsListRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 100);
   };
 
@@ -168,14 +172,14 @@ const SearchResults = () => {
     if (data) {
       // 새로운 검색 결과인지 확인 (이전 데이터와 다른 경우)
       const isNewSearch = prevDataRef.current !== data;
-      
+
       if (isNewSearch) {
         // 새로운 검색 결과인 경우 최상단으로 스크롤
         setCurrentPage(1);
         isInitialLoadRef.current = true;
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-      
+
       prevDataRef.current = data;
     }
   }, [data]);
@@ -185,7 +189,10 @@ const SearchResults = () => {
     // 처음 로드가 아니고, 페이지가 변경된 경우에만 스크롤
     if (!isInitialLoadRef.current && currentPage > 1) {
       setTimeout(() => {
-        resultsListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        resultsListRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }, 100);
     } else if (isInitialLoadRef.current && data) {
       // 처음 로드 시 플래그를 false로 변경
@@ -262,7 +269,7 @@ const SearchResults = () => {
                       query={query}
                     />
                   </div>
-                  
+
                   {/* 페이징 */}
                   <div className="shrink-0">
                     <Pagination
@@ -302,7 +309,9 @@ const SearchResults = () => {
                 {regionData.length > 0 && (
                   <div className="bg-white rounded-lg shadow-sm p-6">
                     <AreaChartComponent
-                      data={[...regionData].sort((a, b) => a.label.localeCompare(b.label))}
+                      data={[...regionData].sort((a, b) =>
+                        a.label.localeCompare(b.label)
+                      )}
                       title="지역 분포"
                       dataKey="value"
                       xAxisKey="label"
@@ -353,7 +362,10 @@ const SearchResults = () => {
             (panel) => panel.demographic_info?.sub_region === clickedData.label
           );
           setFilteredPanels(filtered);
-          setFilterInfo({ label: String(clickedData.label), type: "거주지 분포" });
+          setFilterInfo({
+            label: String(clickedData.label),
+            type: "거주지 분포",
+          });
           setIsResidenceModalOpen(false);
           setIsModalOpen(true);
         }}
@@ -365,7 +377,11 @@ const SearchResults = () => {
           {/* 채팅창 토글 버튼 - 항상 표시 */}
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
-            className={`fixed ${isChatOpen ? 'bottom-[520px] md:bottom-[620px] right-4' : 'bottom-4 right-4'} bg-[#3182f6] text-white rounded-full p-3 md:p-4 shadow-xl hover:bg-[#1b64da] transition-all duration-300 z-[60] flex items-center justify-center`}
+            className={`fixed ${
+              isChatOpen
+                ? "bottom-[520px] md:bottom-[620px] right-4"
+                : "bottom-4 right-4"
+            } bg-[#3182f6] text-white rounded-full p-3 md:p-4 shadow-xl hover:bg-[#1b64da] transition-all duration-300 z-[60] flex items-center justify-center`}
             aria-label={isChatOpen ? "채팅창 닫기" : "채팅창 열기"}
           >
             {isChatOpen ? (
@@ -376,7 +392,11 @@ const SearchResults = () => {
           </button>
 
           {/* 채팅창 */}
-          <div className={`fixed bottom-0 right-0 left-0 md:left-auto md:right-4 md:bottom-4 md:w-[450px] z-50 transition-all duration-300 ${isChatOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+          <div
+            className={`fixed bottom-0 right-0 left-0 md:left-auto md:right-4 md:bottom-4 md:w-[450px] z-50 transition-all duration-300 ${
+              isChatOpen ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
             <div className="bg-white rounded-t-xl md:rounded-xl shadow-2xl border border-gray-200 h-[500px] md:h-[600px] max-h-[80vh] flex flex-col overflow-hidden">
               <AIChat query={query} sessionId={data?.session_id} />
             </div>
