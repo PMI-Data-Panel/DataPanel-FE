@@ -604,7 +604,7 @@ const SearchPage = () => {
         }}
       >
         <div 
-          className="h-full transition-opacity duration-300"
+          className="h-full flex flex-col transition-opacity duration-300"
           style={{
             opacity: isSidebarOpen ? 1 : 0,
             pointerEvents: isSidebarOpen ? 'auto' : 'none',
@@ -613,7 +613,7 @@ const SearchPage = () => {
         >
             {/* 타이틀 - 파란색 그라데이션 헤더 */}
         <div 
-          className="px-4 py-3 relative"
+          className="px-4 py-3 relative shrink-0"
           style={{
             clipPath: 'polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%)',
             minHeight: '100px',
@@ -631,7 +631,7 @@ const SearchPage = () => {
         </div>
 
         {/* 검색/필터 섹션 */}
-        <div className="px-4 pt-1 pb-2 bg-white">
+        <div className="px-4 pt-1 pb-2 bg-white shrink-0">
           <p className="font-black text-black mb-1" style={{ fontSize: '19px' }}>
             검색어가 고민되시나요?
           </p>
@@ -651,7 +651,7 @@ const SearchPage = () => {
         </div>
 
         {/* 전체 응답자 수 */}
-        <div className="px-4 py-1">
+        <div className="px-4 py-1 shrink-0">
           <div className="text-sm text-gray-600">
             전체 응답자 수: <span className="text-blue-600 font-bold text-base">
               {statisticsData?.total_users?.toLocaleString() || TOTAL_PANEL_COUNT.toLocaleString()}
