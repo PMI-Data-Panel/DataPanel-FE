@@ -22,6 +22,7 @@ import {
 import BarChart from "../components/common/graph/BarChart";
 import GenderChart from "../components/common/graph/GenderChart";
 import TreeMapComponent from "../components/common/graph/TreeMap";
+import AreaChartComponent from "../components/common/graph/AreaChart";
 
 const SearchResults = () => {
   const { query, searchResults: data } = useSearch();
@@ -299,11 +300,17 @@ const SearchResults = () => {
 
                 {/* 지역 분포 */}
                 {regionData.length > 0 && (
-                  <TreeMapComponent
-                    data={regionData}
-                    title="지역 분포"
-                    onItemClick={handleRegionClick}
-                  />
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <AreaChartComponent
+                      data={[...regionData].sort((a, b) => a.label.localeCompare(b.label))}
+                      title="지역 분포"
+                      dataKey="value"
+                      xAxisKey="label"
+                      color="#3b82f6"
+                      areaType="monotone"
+                      onItemClick={handleRegionClick}
+                    />
+                  </div>
                 )}
 
                 {/* 패널 분포 */}

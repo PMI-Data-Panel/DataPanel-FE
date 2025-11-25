@@ -17,6 +17,7 @@ interface AreaChartComponentProps {
   xAxisKey?: string;
   color?: string;
   areaType?: "monotone" | "linear" | "step";
+  onItemClick?: (data: Distribution) => void;
 }
 
 const AreaChartComponent = ({
@@ -26,6 +27,7 @@ const AreaChartComponent = ({
   xAxisKey = "label",
   color = "#3b82f6",
   areaType = "monotone",
+  onItemClick,
 }: AreaChartComponentProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -101,6 +103,23 @@ const AreaChartComponent = ({
         </AreaChart>
       </ResponsiveContainer>
       </div>
+      )}
+      {/* 클릭 가능한 지역 목록 */}
+      {onItemClick && data.length > 0 && (
+        <div className="px-4 pb-4 pt-2">
+          <div className="flex flex-wrap gap-2 justify-center">
+            {data.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => onItemClick(item)}
+                className="px-3 py-1.5 text-xs md:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors cursor-pointer"
+                title={`${item.label}: ${item.value}명 (${item.percentage}%)`}
+              >
+                {item.label} ({item.value})
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

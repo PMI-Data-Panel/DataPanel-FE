@@ -807,6 +807,29 @@ const SearchPage = () => {
                 >
                   술담배 좋아하는 30대
                 </button>
+                <button
+                  onClick={() => {
+                    const suggestion = "반려동물 키우는 20대 여성";
+                    setQuery(suggestion);
+                    handleSearch(suggestion);
+                  }}
+                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
+                  style={{ 
+                    color: '#2DC2F2',
+                    borderRadius: '100px',
+                    borderColor: '#2DC2F2',
+                    fontWeight: 950,
+                    letterSpacing: '-0.02em'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(45, 194, 242, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  반려동물 키우는 20대 여성
+                </button>
               </div>
             </div>
 
