@@ -19,7 +19,6 @@ export interface ResponseSearchNlDto {
   page_size: number;
   has_more: boolean;
   llm_summary: LLMSummary;
-  session_id: string;
 }
 
 export interface SearchNlResults {
@@ -86,58 +85,60 @@ export interface ResponseUserDetailDto {
     failed: number;
   };
   // 실제 응답 구조: hits는 배열일 수도 있고, 중첩 객체일 수도 있음
-  hits: Array<{
-    _index?: string;
-    _id: string;
-    _score: number;
-    _source: {
-      user_id: string;
-      timestamp?: string;
-      metadata: {
-        panel?: string;
-        gender?: string;
-        birth_year?: number | string;
-        age?: number;
-        age_group?: string;
-        region?: string;
-        sub_region?: string;
-        survey_datetime?: string;
-        birth_date?: string;
-      };
-      qa_pairs: Array<{
-        q_text: string;
-        answer: string | string[];
-      }>;
-    };
-  }> | {
-    total: {
-      value: number;
-      relation: string;
-    };
-    max_score: number;
-    hits: Array<{
-      _index: string;
-      _id: string;
-      _score: number;
-      _source: {
-        user_id: string;
-        timestamp?: string;
-        metadata: {
-          panel?: string;
-          gender?: string;
-          birth_year?: number | string;
-          age?: number;
-          age_group?: string;
-          region?: string;
-          sub_region?: string;
+  hits:
+    | Array<{
+        _index?: string;
+        _id: string;
+        _score: number;
+        _source: {
+          user_id: string;
+          timestamp?: string;
+          metadata: {
+            panel?: string;
+            gender?: string;
+            birth_year?: number | string;
+            age?: number;
+            age_group?: string;
+            region?: string;
+            sub_region?: string;
+            survey_datetime?: string;
+            birth_date?: string;
+          };
+          qa_pairs: Array<{
+            q_text: string;
+            answer: string | string[];
+          }>;
         };
-        qa_pairs: Array<{
-          q_text: string;
-          answer: string | string[];
+      }>
+    | {
+        total: {
+          value: number;
+          relation: string;
+        };
+        max_score: number;
+        hits: Array<{
+          _index: string;
+          _id: string;
+          _score: number;
+          _source: {
+            user_id: string;
+            timestamp?: string;
+            metadata: {
+              panel?: string;
+              gender?: string;
+              birth_year?: number | string;
+              age?: number;
+              age_group?: string;
+              region?: string;
+              sub_region?: string;
+            };
+            qa_pairs: Array<{
+              q_text: string;
+              answer: string | string[];
+            }>;
+          };
         }>;
       };
-    }>;
-  };
 }
 
 // 공통 분포 인터페이스
@@ -254,4 +255,3 @@ export interface AllStatisticsResponse {
   total_users: number;
   statistics: Record<string, QuestionStatistics>;
 }
-

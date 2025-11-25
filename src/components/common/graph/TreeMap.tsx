@@ -22,27 +22,27 @@ interface TreeMapComponentProps {
 const convertToTreeMapData = (data: Distribution[]): TreeMapData => {
   // 데이터 정렬 (큰 값부터)
   const sortedData = [...data].sort((a, b) => b.value - a.value);
-  
+
   // 전체 합계 계산
   const total = sortedData.reduce((sum, item) => sum + item.value, 0);
-  
+
   // 최대 크기 제한 (전체의 30%를 넘지 않도록)
   const maxSizeRatio = 0.15;
   const maxSize = total * maxSizeRatio;
-  
+
   // 크기 제한을 적용한 데이터 변환
   const processedData = sortedData.map((item) => {
     const originalSize = item.value;
     // 최대 크기를 초과하는 경우 제한 적용
     const limitedSize = originalSize > maxSize ? maxSize : originalSize;
-    
+
     return {
       name: String(item.label),
       size: limitedSize,
       originalSize: originalSize, // 원본 크기 저장 (표시용)
     };
   });
-  
+
   return {
     name: "root",
     children: processedData,
@@ -84,8 +84,8 @@ const CustomizedContent = (props: CustomizedContentProps) => {
   // 텍스트 표시를 위한 조건 계산 (모바일 대응)
   const area = width * height;
   // 모바일 감지 (렌더링 시점에 체크)
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
   // 모바일과 데스크탑에 따라 다른 기준 적용
   const minAreaForFullText = isMobile ? 1200 : 2000; // 이름 + 숫자 표시를 위한 최소 영역
   const minAreaForNameOnly = isMobile ? 500 : 800; // 이름만 표시를 위한 최소 영역
@@ -102,16 +102,6 @@ const CustomizedContent = (props: CustomizedContentProps) => {
   // 호버 효과를 위한 상태 (간단한 구현)
   const colorIndex = (index || 0) % COLORS.length;
   const baseColor = COLORS[colorIndex];
-  
-  // 색상 밝기 계산 (더 어두운 버전)
-  const getDarkerColor = (color: string) => {
-    // 간단한 어두운 버전 생성
-    const hex = color.replace('#', '');
-    const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 20);
-    const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 20);
-    const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 20);
-    return `rgb(${r}, ${g}, ${b})`;
-  };
 
   return (
     <g
@@ -129,11 +119,13 @@ const CustomizedContent = (props: CustomizedContentProps) => {
           fill: baseColor,
           stroke: "#fff",
           strokeWidth: 2.5,
-          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))",
         }}
       />
       {/* 텍스트 표시 로직 개선 - 중앙 정렬 */}
-      {width >= minWidthForText && height >= minHeightForText && area >= minAreaForNameOnly ? (
+      {width >= minWidthForText &&
+      height >= minHeightForText &&
+      area >= minAreaForNameOnly ? (
         area >= minAreaForFullText ? (
           // 큰 영역: 이름 + 숫자 표시 (중앙 정렬)
           <>
@@ -145,7 +137,7 @@ const CustomizedContent = (props: CustomizedContentProps) => {
               fill="#fff"
               fontSize={getFontSize(14)}
               fontWeight="600"
-              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+              style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
             >
               {name}
             </text>
@@ -157,7 +149,7 @@ const CustomizedContent = (props: CustomizedContentProps) => {
               fill="#fff"
               fontSize={getFontSize(11)}
               fillOpacity={0.95}
-              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+              style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
             >
               {value?.toLocaleString()}명
             </text>
@@ -172,14 +164,16 @@ const CustomizedContent = (props: CustomizedContentProps) => {
             fill="#fff"
             fontSize={getFontSize(10)}
             fontWeight="600"
-            style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
+            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
           >
             {name}
           </text>
         )
       ) : (
         // 매우 작은 영역: 툴팁을 위한 제목 속성 추가
-        <title>{name}: {value?.toLocaleString()}명</title>
+        <title>
+          {name}: {value?.toLocaleString()}명
+        </title>
       )}
     </g>
   );
@@ -194,7 +188,7 @@ const TreeMapComponent = ({
   // Distribution 타입인지 확인하고 변환
   const isDistribution =
     Array.isArray(data) && data.length > 0 && "label" in data[0];
-  
+
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -202,11 +196,14 @@ const TreeMapComponent = ({
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  if (!isDistribution && (!data || (data as TreeMapData).children?.length === 0)) {
+  if (
+    !isDistribution &&
+    (!data || (data as TreeMapData).children?.length === 0)
+  ) {
     return null;
   }
 
@@ -220,7 +217,10 @@ const TreeMapComponent = ({
   );
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col" style={{ minWidth: 0, minHeight: isMobile ? 400 : 320 }}>
+    <div
+      className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col"
+      style={{ minWidth: 0, minHeight: isMobile ? 400 : 320 }}
+    >
       {title && (
         <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0">
           <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -229,8 +229,19 @@ const TreeMapComponent = ({
           </h3>
         </div>
       )}
-      <div style={{ width: '100%', height: isMobile ? 360 : 280, minHeight: isMobile ? 360 : 280 }}>
-        <ResponsiveContainer width="100%" height="100%" minHeight={isMobile ? 360 : 280} minWidth={0}>
+      <div
+        style={{
+          width: "100%",
+          height: isMobile ? 360 : 280,
+          minHeight: isMobile ? 360 : 280,
+        }}
+      >
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          minHeight={isMobile ? 360 : 280}
+          minWidth={0}
+        >
           <Treemap
             data={[treeMapData] as unknown as TreeMapData[]}
             dataKey={dataKey}
