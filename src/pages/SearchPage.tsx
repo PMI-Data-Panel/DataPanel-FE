@@ -11,7 +11,17 @@ import { TOTAL_PANEL_COUNT } from "../constants/number";
 import { useGetAllStatistics } from "../hooks/queries/useGetVisualization";
 import type { AllStatisticsResponse, Distribution } from "../types/search";
 import { useMemo, useState } from "react";
-import { Search, Send, Menu, X } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
+import SearchKeywords from "../components/SearchPage/SearchKeywords";
+import SearchForm from "../components/SearchPage/SearchForm";
+import LandingText from "../components/common/LandingText";
+
+// 시연용 예시 키워드
+const keywords = [
+  "서울에 사는 ott 구독자",
+  "술담배 좋아하는 30대",
+  "반려동물 키우는 20대 여성",
+];
 
 // 카테고리 타입 정의
 type CategoryType =
@@ -387,12 +397,6 @@ const StatisticsCharts = ({
     return (
       <div key={chart.key} className="group relative">
         <div className="relative bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-          <div className="absolute top-3 right-3 z-10">
-            <div className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100">
-              <span className="text-xs font-medium text-gray-600">데이터</span>
-            </div>
-          </div>
-
           <div className="relative">
             {chart.type === "pie" && (
               <PieChart
@@ -531,7 +535,7 @@ const StatisticsCharts = ({
         </div>
       ) : (
         <div className="text-center py-20 font-bold text-black">
-          왼쪽에서 카테고리를 선택해주세요.
+          왼쪽에서 카테고리를 선택해보세요.
         </div>
       )}
     </div>
@@ -674,14 +678,9 @@ const SearchPage = () => {
         >
           {/* 검색/필터 섹션 */}
           <div className="px-3 py-5 bg-white shrink-0">
-            <p
-              className="font-black text-black mb-1"
-              style={{ fontSize: "19px" }}
-            >
-              전체 통계에서 검색하기
-            </p>
+            <p className="font-black text-black mt-3">전체 통계에서 검색하기</p>
 
-            <div className="relative">
+            <div className="relative py-2">
               <input
                 type="text"
                 placeholder="전체 통계 그래프에서 키워드 검색"
@@ -694,19 +693,19 @@ const SearchPage = () => {
           </div>
 
           {/* 전체 응답자 수 */}
-          <div className="px-4 py-1 shrink-0">
+          <div className="px-4 shrink-0">
             <div className="text-sm text-gray-600">
               전체 응답자 수:{" "}
               <span className="text-blue-600 font-bold text-base">
                 {statisticsData?.total_users?.toLocaleString() ||
                   TOTAL_PANEL_COUNT.toLocaleString()}
-              </span>{" "}
-              명
+              </span>
+              &nbsp;명
             </div>
           </div>
 
           {/* 카테고리 목록 */}
-          <div className="flex-1 overflow-y-auto px-3 py-1">
+          <div className="flex-1 overflow-y-auto px-3 pt-3">
             {CATEGORIES.map((category, index) => {
               const chartCount = getCategoryChartCount(category.id);
               const isSelected = selectedCategory === category.id;
@@ -717,10 +716,10 @@ const SearchPage = () => {
                     onClick={() =>
                       setSelectedCategory(isSelected ? null : category.id)
                     }
-                    className={`w-full px-4 py-3 mb-2 rounded-lg text-left transition-colors ${
+                    className={`w-full px-4 py-2 rounded-lg text-left transition-colors ${
                       isSelected
                         ? "bg-blue-100 border-2 border-blue-500"
-                        : "bg-white border-2 border-transparent hover:bg-gray-50"
+                        : "bg-white border-2 border-transparent hover:bg-blue-100"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -736,7 +735,7 @@ const SearchPage = () => {
                     </div>
                   </button>
                   {index < CATEGORIES.length - 1 && (
-                    <div className="h-px bg-gray-200 mx-4 mb-2"></div>
+                    <div className="h-px bg-gray-200 mx-4"></div>
                   )}
                 </div>
               );
@@ -750,7 +749,7 @@ const SearchPage = () => {
         {/* 사이드바 토글 버튼 */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center bg-blue-800"
+          className="absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center bg-blue-800 cursor-pointer"
         >
           {isSidebarOpen ? (
             <X className="w-5 h-5 text-white" />
@@ -758,160 +757,50 @@ const SearchPage = () => {
             <Menu className="w-5 h-5 text-white" />
           )}
         </button>
+
         {/* 검색중이라면 로딩화면 */}
         {isPending ? (
           <Loading />
         ) : (
           <div className="flex-1 overflow-y-auto bg-white">
             {/* 검색 바 섹션 */}
-            <div className="px-6 py-8 md:px-10 md:py-12">
+            <div className="px-6 py-10 md:px-10 md:py-30">
               {/* 상단 안내 텍스트 */}
-              <div className="mb-6 text-center">
-                <p className="text-lg md:text-xl text-gray-700">
-                  검색하고 싶은 데이터를{" "}
-                  <span
-                    className="font-black"
-                    style={{
-                      color: "#2DC2F2",
-                      fontWeight: 950,
-                      letterSpacing: "-0.02em",
-                    }}
-                  >
-                    자연어로
-                  </span>{" "}
-                  입력하세요
-                </p>
-              </div>
+              <LandingText
+                titleTextFront="검색하고 싶은 데이터를 "
+                titleTextSpan="자연어로"
+                titleTextBack="입력하세요"
+              />
 
               {/* 검색 입력 필드 */}
-              <div className="relative mb-6 max-w-2xl mx-auto">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
-                  style={{ color: "#2DC2F2" }}
+              <div className="relative my-8 max-w-2xl mx-auto">
+                <SearchForm
+                  searchQuery={query}
+                  setSearchQuery={(query) => setQuery(query)}
+                  handleSearch={() => handleSearch(query)}
+                  isSearching={isPending}
                 />
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" && query.trim()) {
-                      handleSearch(query);
-                    }
-                  }}
-                  placeholder="어떤 패널을 추출해드릴까요?"
-                  className="w-full pl-12 pr-14 py-4 text-base border-2 rounded-xl focus:outline-none focus:ring-4 transition-all duration-200 bg-white"
-                  style={{
-                    borderColor: "#2DC2F2",
-                    boxShadow:
-                      "0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#2DC2F2";
-                    e.target.style.boxShadow =
-                      "0 0 0 4px rgba(45, 194, 242, 0.1), 0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#2DC2F2";
-                    e.target.style.boxShadow =
-                      "0 10px 15px -3px rgba(45, 194, 242, 0.1), 0 4px 6px -2px rgba(45, 194, 242, 0.05)";
-                  }}
-                />
-                <button
-                  onClick={() => query.trim() && handleSearch(query)}
-                  disabled={!query.trim() || isPending}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white p-2 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
-                  style={{
-                    backgroundColor: "#2DC2F2",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!e.currentTarget.disabled) {
-                      e.currentTarget.style.backgroundColor = "#1ea8d9";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!e.currentTarget.disabled) {
-                      e.currentTarget.style.backgroundColor = "#2DC2F2";
-                    }
-                  }}
-                >
-                  <Send className="w-5 h-5" />
-                </button>
               </div>
 
               {/* 제안 검색어 */}
               <div className="flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={() => {
-                    const suggestion = "서울에 사는 ott 구독자";
-                    setQuery(suggestion);
-                    handleSearch(suggestion);
-                  }}
-                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
-                  style={{
-                    color: "#2DC2F2",
-                    borderRadius: "100px",
-                    borderColor: "#2DC2F2",
-                    fontWeight: 950,
-                    letterSpacing: "-0.02em",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      "rgba(45, 194, 242, 0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  서울에 사는 ott 구독자
-                </button>
-                <button
-                  onClick={() => {
-                    const suggestion = "술담배 좋아하는 30대";
-                    setQuery(suggestion);
-                    handleSearch(suggestion);
-                  }}
-                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
-                  style={{
-                    color: "#2DC2F2",
-                    borderRadius: "100px",
-                    borderColor: "#2DC2F2",
-                    fontWeight: 950,
-                    letterSpacing: "-0.02em",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      "rgba(45, 194, 242, 0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  술담배 좋아하는 30대
-                </button>
-                <button
-                  onClick={() => {
-                    const suggestion = "반려동물 키우는 20대 여성";
-                    setQuery(suggestion);
-                    handleSearch(suggestion);
-                  }}
-                  className="px-4 py-2 text-sm font-black border rounded-lg transition-colors duration-200"
-                  style={{
-                    color: "#2DC2F2",
-                    borderRadius: "100px",
-                    borderColor: "#2DC2F2",
-                    fontWeight: 950,
-                    letterSpacing: "-0.02em",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      "rgba(45, 194, 242, 0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  반려동물 키우는 20대 여성
-                </button>
+                <SearchKeywords
+                  placeholder={keywords[0]}
+                  setKeyword={() => setQuery(keywords[0])}
+                  handleSearch={() => handleSearch(keywords[0])}
+                />
+
+                <SearchKeywords
+                  placeholder={keywords[1]}
+                  setKeyword={() => setQuery(keywords[1])}
+                  handleSearch={() => handleSearch(keywords[1])}
+                />
+
+                <SearchKeywords
+                  placeholder={keywords[2]}
+                  setKeyword={() => setQuery(keywords[2])}
+                  handleSearch={() => handleSearch(keywords[2])}
+                />
               </div>
             </div>
 
