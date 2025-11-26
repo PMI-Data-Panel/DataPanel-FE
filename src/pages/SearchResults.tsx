@@ -4,7 +4,6 @@ import { useSearch } from "../hooks/useSearch";
 import { useNavigate } from "react-router-dom";
 import AISearchResult from "../components/SearchResults/AISearchResult";
 import AIChat from "../components/SearchResults/AIChat";
-import Sidebar from "../components/SearchPage/Sidebar";
 import NullWarning from "../components/SearchResults/NullWarning";
 import PanelListModal from "../components/SearchResults/PanelListModal";
 import ResidenceModal from "../components/SearchResults/ResidenceModal";
@@ -219,23 +218,18 @@ const SearchResults = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] flex relative w-full max-w-full overflow-x-hidden">
-      {/* 좌측에 호버하면 나오는 사이드바 (데스크탑만) */}
-      <div className="hidden md:block">
-        <Sidebar open={false} />
-      </div>
-
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 w-full min-w-0 p-3 md:pl-16 md:pr-6 md:py-4 lg:pl-20 lg:pr-12 lg:py-6">
         {data && (
           <div className="space-y-3 md:space-y-4 w-full max-w-full">
             {/* 제목 */}
-            <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center justify-between gap-2 mt-2 mb-5">
               <h1 className="text-xl md:text-2xl font-bold text-[#191f28]">
                 분석 결과
               </h1>
               <button
                 onClick={() => navigate("/search")}
-                className="px-3 py-2 bg-white text-[#191f28] rounded-lg hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 shrink-0 shadow-sm border border-gray-100"
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-300 hover:text-blue-600 transition-all duration-200 flex items-center gap-2 shrink-0 shadow-sm border "
               >
                 <Home className="w-4 h-4 md:w-4 md:h-4" />
                 <span className="hidden sm:inline text-xs md:text-sm font-medium">

@@ -4,19 +4,19 @@ import { useEffect } from "react";
 interface SearchFormProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onSearch: (query: string) => void;
+  handleSearch: (query: string) => void;
   isSearching: boolean;
 }
 
 const SearchForm = ({
   searchQuery,
   setSearchQuery,
-  onSearch,
+  handleSearch,
   isSearching,
 }: SearchFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(searchQuery);
+    handleSearch(searchQuery);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -40,7 +40,7 @@ const SearchForm = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="검색어를 입력하세요"
+          placeholder="어떤 패널을 추출해드릴까요?"
           disabled={isSearching}
         />
         <button

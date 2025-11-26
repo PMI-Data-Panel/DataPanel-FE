@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // import 컴포넌트
-import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import HomeLayout from "./layouts/HomeLayout";
 import HomePage from "./pages/HomePage";
@@ -23,10 +22,7 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
+
       {
         path: "/search",
         element: <SearchPage />,
