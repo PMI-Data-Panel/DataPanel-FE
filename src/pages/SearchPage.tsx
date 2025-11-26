@@ -175,7 +175,7 @@ const StatisticsCharts = ({
         </div>
       ) : (
         <div className="text-center py-20 font-bold text-black">
-          왼쪽에서 카테고리를 선택해보세요.
+          전체 데이터 카테고리를 선택해보세요.
         </div>
       )}
     </div>
@@ -261,7 +261,7 @@ const SearchPage = () => {
         {/* 사이드바 토글 버튼 (데스크톱에서만 표시) */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="hidden lg:flex absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 items-center justify-center bg-blue-800 cursor-pointer"
+          className="hidden lg:flex absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 items-center justify-center bg-blue-700 cursor-pointer"
         >
           {isSidebarOpen ? (
             <X className="w-5 h-5 text-white" />
