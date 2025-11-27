@@ -141,25 +141,15 @@ export const calculatePanelData = (
   const panelOrder: string[] = []; // 순서 보존용
   const totalCount = data.results.length;
 
-  // 디버깅: 첫 번째 결과의 구조 확인
-  if (data.results.length > 0) {
-    console.log("🔍 패널 데이터 디버깅 - 첫 번째 결과:", data.results[0]);
-    console.log("🔍 패널 필드 확인:", {
-      panel: data.results[0].panel,
-      metadata: (data.results[0] as any).metadata,
-      demographic_info: data.results[0].demographic_info,
-    });
-  }
-
   data.results.forEach((result) => {
     // 여러 가능한 경로에서 패널 정보 찾기
-    const panel = 
-      result.panel || 
-      (result as any).metadata?.panel ||
-      (result as any).demographic_info?.panel ||
-      (result as any).panel_name ||
-      (result as any).panel_type;
-    
+    const panel =
+      result.panel ||
+      result.metadata?.panel ||
+      result.demographic_info?.panel ||
+      result.panel_name ||
+      result.panel_type;
+
     // 패널 정보 정규화 (대소문자 통일, 공백 제거)
     let key: string;
     if (panel === null || panel === undefined || panel === "") {
@@ -179,8 +169,6 @@ export const calculatePanelData = (
     }
     panelCount[key] = (panelCount[key] || 0) + 1;
   });
-
-  console.log("🔍 패널 분포 결과:", panelCount);
 
   // "미정"이 있으면 마지막으로 정렬
   const sortedOrder = panelOrder.filter(p => p !== "미정");

@@ -19,13 +19,6 @@ const SearchForm = ({
     handleSearch(searchQuery);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handleSubmit(e as any);
-    }
-  };
-
   // 이미 키워드가 있다면 (히스토리로 넘어온 경우) 검색바에 query 입력해두기
   useEffect(() => {
     setSearchQuery(searchQuery);
@@ -39,7 +32,6 @@ const SearchForm = ({
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={handleKeyPress}
           placeholder="어떤 패널을 추출해드릴까요?"
           disabled={isSearching}
         />

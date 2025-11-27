@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Eye, Download, User } from "lucide-react";
 import type { ResponseSearchNlDto, SearchNlResults } from "../../types/search";
 import useGetUserDetail from "../../hooks/queries/useGetUserDetail";
@@ -16,7 +16,6 @@ const SearchResultsList = ({ data, allResults, query }: SearchResultsListProps) 
     useGetUserDetail(selectedUserId);
 
   const handleDetailClick = (userId: string) => {
-    console.log("🔵 사용자 상세 정보 요청:", userId);
     setSelectedUserId(userId);
   };
 
@@ -85,20 +84,6 @@ const SearchResultsList = ({ data, allResults, query }: SearchResultsListProps) 
     link.click();
     document.body.removeChild(link);
   };
-
-  // 사용자 상세 정보가 로드되면 로그 출력
-  useEffect(() => {
-    if (userDetail && selectedUserId) {
-      console.log("📥 사용자 상세 정보 응답 받음");
-      console.log("📥 사용자 ID:", selectedUserId);
-      console.log("📥 전체 응답 데이터:", JSON.stringify(userDetail, null, 2));
-      // 실제 응답 구조에 맞게 수정: hits는 배열일 수도 있고 중첩 객체일 수도 있음
-      const source = Array.isArray(userDetail.hits) 
-        ? userDetail.hits[0]?._source 
-        : (userDetail.hits as { hits?: Array<{ _source?: unknown }> })?.hits?.[0]?._source;
-      console.log("📥 사용자 소스 데이터:", JSON.stringify(source, null, 2));
-    }
-  }, [userDetail, selectedUserId]);
 
   const handleCloseModal = () => {
     setSelectedUserId(null);

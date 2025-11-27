@@ -6,7 +6,6 @@ import Loading from "../components/SearchPage/Loading";
 import AreaChart from "../components/common/graph/AreaChart";
 import BarChart from "../components/common/graph/BarChart";
 import PieChart from "../components/common/graph/PieChart";
-import TreeMap from "../components/common/graph/TreeMap";
 import { TOTAL_PANEL_COUNT } from "../constants/number";
 import { useGetAllStatistics } from "../hooks/queries/useGetVisualization";
 import type { AllStatisticsResponse, Distribution } from "../types/search";
@@ -24,7 +23,6 @@ const keywords = [
   "반려동물 키우는 20대 여성",
 ];
 
-// StatisticsCharts 컴포넌트
 const StatisticsCharts = ({
   data,
   selectedCategory,
@@ -92,12 +90,13 @@ const StatisticsCharts = ({
               />
             )}
             {chart.type === "treemap" && (
-              <TreeMap
+              <BarChart
                 data={chart.data}
                 title={chart.title}
-                onItemClick={
+                onBarClick={
                   chart.key === "q_region" ? handleRegionClick : undefined
                 }
+                scrollable={true}
               />
             )}
             {chart.type === "area" && (
@@ -146,13 +145,13 @@ const StatisticsCharts = ({
                 ← 전체 지역 보기
               </button>
             </div>
-            <TreeMap data={filteredSubRegionData} title="" />
+            <BarChart data={filteredSubRegionData} title="" scrollable={true} />
           </div>
         </div>
       )}
 
       {/* 선택된 카테고리의 차트들 */}
-      {selectedCategory && filteredGroups.length > 0 ? (
+      {filteredGroups.length > 0 ? (
         filteredGroups.map((group, groupIndex) => (
           <div
             key={groupIndex}
@@ -167,15 +166,17 @@ const StatisticsCharts = ({
             {group.charts.map(renderChart)}
           </div>
         ))
+      ) : categoryFilter.trim() ? (
+        <div className="text-center py-20 font-bold text-black">
+          "{categoryFilter}" 키워드에 맞는 차트가 없습니다.
+        </div>
       ) : selectedCategory ? (
         <div className="text-center py-20 font-bold text-black">
-          {categoryFilter.trim()
-            ? "필터 조건에 맞는 차트가 없습니다."
-            : "차트가 없습니다."}
+          차트가 없습니다.
         </div>
       ) : (
         <div className="text-center py-20 font-bold text-black">
-          전체 데이터 카테고리를 선택해보세요.
+          전체 데이터 카테고리를 선택하거나 키워드를 검색해보세요.
         </div>
       )}
     </div>
@@ -186,7 +187,6 @@ const SearchPage = () => {
   const { query, setQuery, addSearchHistory, setSearchResults } = useSearch();
   const { mutate, isPending, isSuccess, data, reset } = usePostSearch();
   const navigate = useNavigate();
-  const isInitialized = useRef(false);
   const { data: statisticsData, isLoading: isLoadingStatistics } =
     useGetAllStatistics();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
@@ -195,26 +195,28 @@ const SearchPage = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const { getCategoryChartCount } = useVisualization(statisticsData);
+  const hasInitialized = useRef(false);
 
-  // 페이지 마운트시 검색어 초기화
+  // 페이지 진입시 검색어 초기화 (컴포넌트 마운트/언마운트 시에만)
   useEffect(() => {
-    if (!isInitialized.current) {
-      setQuery("");
-      isInitialized.current = true;
-    }
-  }, [setQuery]);
+    setQuery("");
+    hasInitialized.current = true;
+
+    return () => {
+      hasInitialized.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 검색 성공 시 결과를 context에 저장하고 페이지 이동
   useEffect(() => {
     if (isSuccess && data) {
-      console.log("🔴 검색 성공, 결과 저장 후 navigate", data);
       setSearchResults(data);
       navigate("/search/results");
     }
   }, [isSuccess, data, setSearchResults, navigate]);
 
   const handleSearch = async (searchQuery: string) => {
-    console.log("🔴 사용자가 입력한 검색어: ", searchQuery);
     // 전에 성공했었다면 리셋
     if (isSuccess) {
       reset();
@@ -233,11 +235,6 @@ const SearchPage = () => {
       page: 1,
       page_size: 30000,
     };
-    console.log(
-      "🔴 SearchPage - 요청 Body:",
-      JSON.stringify(requestBody, null, 2)
-    );
-    console.log("🔴 SearchPage - page_size 값:", requestBody.page_size);
     mutate(requestBody);
   };
 
@@ -261,7 +258,7 @@ const SearchPage = () => {
         {/* 사이드바 토글 버튼 (데스크톱에서만 표시) */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="hidden lg:flex absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 items-center justify-center bg-blue-700 cursor-pointer"
+          className="hidden lg:flex absolute top-4 left-4 z-50 p-2 rounded-lg shadow-md hover:bg-opacity-90 transition-all duration-200 items-center justify-center bg-blue-600 cursor-pointer"
         >
           {isSidebarOpen ? (
             <X className="w-5 h-5 text-white" />

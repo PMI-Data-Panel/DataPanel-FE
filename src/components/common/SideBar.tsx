@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 // 카테고리 타입 정의
 export type CategoryType =
@@ -17,7 +17,7 @@ interface Category {
 
 const CATEGORIES: Category[] = [
   { id: "demographics", name: "인구통계", icon: "👥" },
-  { id: "region", name: "지역정보", icon: "📍" },
+  { id: "region", name: "지역정보", icon: "🏠" },
   { id: "education", name: "교육/직업", icon: "🎓" },
   { id: "income", name: "소득", icon: "💰" },
   { id: "lifestyle", name: "생활패턴", icon: "🚬" },
@@ -33,6 +33,18 @@ interface SideBarProps {
   setSelectedCategory: (category: CategoryType | null) => void;
   getCategoryChartCount: (categoryId: CategoryType) => number;
 }
+
+const handleSearchInput = (
+  value: string,
+  setCategoryFilter: (filter: string) => void,
+  setSelectedCategory: (category: CategoryType | null) => void
+) => {
+  setCategoryFilter(value);
+  // 검색어가 입력되면 선택된 카테고리 해제
+  if (value.trim()) {
+    setSelectedCategory(null);
+  }
+};
 
 const SideBar = ({
   isOpen,
@@ -50,11 +62,9 @@ const SideBar = ({
       }`}
     >
       <div
-        className="h-full flex flex-col w-full lg:w-80"
-        style={{
-          opacity: isOpen ? 1 : 0,
-          transition: "opacity 300ms ease-in-out",
-        }}
+        className={`h-full flex flex-col w-full lg:w-80 transition-opacity duration-300 ease-in-out ${
+          isOpen ? "opacity-100" : "opacity-0"
+        }`}
       >
         {/* 검색/필터 섹션 */}
         <div className="px-3 py-5 bg-white shrink-0">
@@ -65,10 +75,42 @@ const SideBar = ({
               type="text"
               placeholder="전체 통계 그래프에서 키워드 검색"
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) =>
+                handleSearchInput(
+                  e.target.value,
+                  setCategoryFilter,
+                  setSelectedCategory
+                )
+              }
               className="w-full px-4 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {categoryFilter ? (
+              <X
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                onClick={() => setCategoryFilter("")}
+              />
+            ) : (
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            )}
+          </div>
+
+          {/* 예시 키워드 */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {["개인소득", "휴대폰", "담배"].map((keyword) => (
+              <button
+                key={keyword}
+                onClick={() =>
+                  handleSearchInput(
+                    keyword,
+                    setCategoryFilter,
+                    setSelectedCategory
+                  )
+                }
+                className="px-3 py-1 text-xs cursor-pointer bg-gray-100 text-gray-700 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
+              >
+                {keyword}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -97,10 +139,11 @@ const SideBar = ({
                   }
                   className={`w-full px-4 py-2 rounded-lg text-left transition-colors ${
                     isSelected
-                      ? "bg-blue-100 border-2 border-blue-500"
-                      : "bg-white border-2 border-transparent hover:bg-blue-100"
+                      ? "bg-blue-100 border-2 border-blue-500 cursor-pointer"
+                      : "bg-white border-2 border-transparent hover:bg-blue-100 cursor-pointer"
                   }`}
                 >
+                  {/* n개의 차트 */}
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{category.icon}</span>
                     <div className="flex-1">

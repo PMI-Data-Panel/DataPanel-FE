@@ -26,7 +26,12 @@ export interface SearchNlResults {
   score: number;
   timestamp: string;
   survey_datetime?: string;
-  panel?: string; // 패널 정보 추가
+  panel?: string;
+  panel_name?: string;
+  panel_type?: string;
+  metadata?: {
+    panel?: string;
+  };
   demographic_info?: {
     age_group: string;
     gender: string;
@@ -35,6 +40,7 @@ export interface SearchNlResults {
     occupation: boolean;
     marital_status: string;
     sub_region: string;
+    panel?: string;
   };
   behaviors_info?: {
     smoker: boolean;

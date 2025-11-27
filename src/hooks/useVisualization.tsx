@@ -339,7 +339,30 @@ export const useVisualization = (data: AllStatisticsResponse | undefined) => {
     selectedCategory: CategoryType | null,
     categoryFilter: string
   ): ChartGroup[] => {
-    if (!selectedCategory) return [];
+    // 카테고리가 선택되지 않았을 때
+    if (!selectedCategory) {
+      // 키워드 필터가 있으면 모든 카테고리에서 검색
+      if (categoryFilter.trim()) {
+        const allGroups: ChartGroup[] = [];
+        Object.keys(categorizedCharts).forEach((catKey) => {
+          const category = catKey as CategoryType;
+          const groups = categorizedCharts[category];
+
+          const filteredGroups = groups
+            .map((group) => ({
+              ...group,
+              charts: group.charts.filter((chart) =>
+                chart.title.toLowerCase().includes(categoryFilter.toLowerCase())
+              ),
+            }))
+            .filter((group) => group.charts.length > 0);
+
+          allGroups.push(...filteredGroups);
+        });
+        return allGroups;
+      }
+      return [];
+    }
 
     let groups = categorizedCharts[selectedCategory];
 

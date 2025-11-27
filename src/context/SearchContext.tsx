@@ -13,7 +13,7 @@ interface SearchContextType {
   searchHistory: SearchHistoryItem[];
   searchResults: ResponseSearchNlDto | null;
   searchSessionId: string | null;
-  setQuery: (query: string) => Promise<void>;
+  setQuery: (query: string) => void;
   setSearchResults: (data: ResponseSearchNlDto | null) => void;
   addSearchHistory: (query: string, resultCount?: number) => void;
   addSearchSessionId: (sessionId: string) => void;
@@ -26,7 +26,7 @@ export const SearchContext = createContext<SearchContextType>({
   searchHistory: [],
   searchResults: null,
   searchSessionId: "",
-  setQuery: async () => {},
+  setQuery: () => {},
   setSearchResults: () => {},
   addSearchHistory: () => {},
   addSearchSessionId: () => {},

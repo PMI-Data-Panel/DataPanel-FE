@@ -26,11 +26,9 @@ export const useLocalStorage = (key: string) => {
   const removeItem = () => {
     try {
       window.localStorage.removeItem(key);
-    } catch (error) {
-      console.log(
-        "로컬스토리지 아이템 삭제 중, 오류가 발생하였습니다: ",
-        error
-      );
+    } catch (err) {
+      // 로컬스토리지 아이템 삭제 중 오류는 무시
+      console.log(err);
     }
   };
 

@@ -6,13 +6,9 @@ function usePostSearch() {
   return useMutation({
     mutationFn: (body: RequestSearchNlDto) => postSearchNl(body),
 
-    onSuccess: () => {
-      console.log("🟠 검색 요청 성공");
-    },
+    onSuccess: () => {},
 
-    onError: (error) => {
-      console.log("🟠 검색 요청 중 에러 발생:", error);
-    },
+    onError: () => {},
   });
 }
 

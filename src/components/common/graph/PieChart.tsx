@@ -12,7 +12,6 @@ interface PieChartComponentProps {
 
 const RADIAN = Math.PI / 180;
 
-// 기본 색상 팔레트
 const DEFAULT_COLORS = [
   "#3b82f6", // blue-500
   "#8b5cf6", // violet-500
@@ -36,9 +35,10 @@ const renderCustomizedLabel = ({
   }
   const ncx = Number(cx);
   const ncy = Number(cy);
-  
+
   // 레이블을 파이 조각의 중앙에 배치
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const radius =
+    Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5;
   const labelX = ncx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
   const labelY = ncy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
 
@@ -50,12 +50,12 @@ const renderCustomizedLabel = ({
       textAnchor="middle"
       dominantBaseline="middle"
       className="font-semibold"
-      style={{ fontSize: '12px', pointerEvents: 'none' }}
+      style={{ fontSize: "12px", pointerEvents: "none" }}
     >
       <tspan x={labelX} dy="-0.3em">
         {name}
       </tspan>
-      <tspan x={labelX} dy="1.1em" style={{ fontSize: '11px' }}>
+      <tspan x={labelX} dy="1.1em" style={{ fontSize: "11px" }}>
         {`${((percent ?? 1) * 100).toFixed(0)}%`}
       </tspan>
     </text>
@@ -70,7 +70,7 @@ const PieChartComponent = ({
   onItemClick,
 }: PieChartComponentProps) => {
   const palette = colors && colors.length > 0 ? colors : DEFAULT_COLORS;
-  
+
   if (!data || data.length === 0) {
     return null;
   }
@@ -82,7 +82,10 @@ const PieChartComponent = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col" style={{ minWidth: 0, minHeight: 320 }}>
+    <div
+      className="bg-white rounded-xl shadow-lg p-3 md:p-4 w-full max-w-full overflow-hidden border border-gray-100 flex flex-col"
+      style={{ minWidth: 0, minHeight: 320 }}
+    >
       {title && (
         <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 shrink-0">
           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -91,8 +94,21 @@ const PieChartComponent = ({
           </h3>
         </div>
       )}
-      <div style={{ width: '100%', height: 280, minHeight: 280, flex: 1, padding: '0 1rem' }}>
-        <ResponsiveContainer width="100%" height="100%" minHeight={280} minWidth={0}>
+      <div
+        style={{
+          width: "100%",
+          height: 280,
+          minHeight: 280,
+          flex: 1,
+          padding: "0 1rem",
+        }}
+      >
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          minHeight={280}
+          minWidth={0}
+        >
           <PieChart>
             <Pie
               data={data}
@@ -106,7 +122,7 @@ const PieChartComponent = ({
               cy="50%"
               outerRadius={90}
               onClick={(entry: Distribution) => handleClick(entry)}
-              style={{ cursor: onItemClick ? 'pointer' : 'default' }}
+              style={{ cursor: onItemClick ? "pointer" : "default" }}
               activeShape={false}
             >
               {data.map((entry, index) => (

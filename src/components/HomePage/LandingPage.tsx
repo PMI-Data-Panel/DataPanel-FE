@@ -5,8 +5,8 @@ import LandingText from "../common/LandingText";
 
 const carouselImages = [
   "/LandingPageImage.png",
-  "/LandingPageImage2.png",
-  "/LandingPageImage3.png",
+  "/LandingPageImage2.jpg",
+  "/LandingPageImage3.jpg",
 ];
 
 const LandingPage = () => {

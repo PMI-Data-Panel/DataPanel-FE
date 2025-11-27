@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { SearchContext } from "../context/SearchContext";
 import type { SearchHistoryItem } from "../context/SearchContext";
 import type { ResponseSearchNlDto } from "../types/search";
@@ -13,32 +13,26 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
   const historyStorage = useLocalStorage(LOCAL_STORAGE_KEY.searchHistory);
   const sessionStorage = useLocalStorage(LOCAL_STORAGE_KEY.sessionId);
 
-  const [query, setQueryState] = useState<string>("");
-  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
-  const [searchResults, setSearchResults] =
-    useState<ResponseSearchNlDto | null>(null);
-  const [searchSessionId, setSearchSessionid] = useState<string>("");
-
-  // 초기 로드 시 localStorage에서 값 가져오기
-  useEffect(() => {
-    const savedQuery = queryStorage.getItem();
-    if (savedQuery) {
-      setQueryState(savedQuery);
-    }
-
+  const [query, setQueryState] = useState<string>(
+    () => queryStorage.getItem() || ""
+  );
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>(() => {
     const savedHistory = historyStorage.getItem();
     if (savedHistory) {
       try {
         const parsed = JSON.parse(savedHistory);
-        setSearchHistory(Array.isArray(parsed) ? parsed : []);
+        return Array.isArray(parsed) ? parsed : [];
       } catch {
-        setSearchHistory([]);
+        return [];
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return [];
+  });
+  const [searchResults, setSearchResults] =
+    useState<ResponseSearchNlDto | null>(null);
+  const [searchSessionId, setSearchSessionid] = useState<string>("");
 
-  const setQuery = async (newQuery: string) => {
+  const setQuery = (newQuery: string) => {
     setQueryState(newQuery);
     queryStorage.setItem(newQuery);
   };
@@ -91,21 +85,24 @@ export const SearchProvider = ({ children }: PropsWithChildren) => {
     historyStorage.removeItem();
   };
 
+  const contextValue = useMemo(
+    () => ({
+      query,
+      searchHistory,
+      searchResults,
+      searchSessionId,
+      setQuery,
+      setSearchResults,
+      addSearchHistory,
+      addSearchSessionId,
+      removeSearchHistory,
+      clearSearchHistory,
+    }),
+    [query, searchHistory, searchResults, searchSessionId]
+  );
+
   return (
-    <SearchContext.Provider
-      value={{
-        query,
-        searchHistory,
-        searchResults,
-        searchSessionId,
-        setQuery,
-        setSearchResults,
-        addSearchHistory,
-        addSearchSessionId,
-        removeSearchHistory,
-        clearSearchHistory,
-      }}
-    >
+    <SearchContext.Provider value={contextValue}>
       {children}
     </SearchContext.Provider>
   );
